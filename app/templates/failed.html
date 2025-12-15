@@ -1,0 +1,764 @@
+{% extends "base.html" %}
+{% block title %}Failed Transactions{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Failed Transactions</h1>
+        <p class="page-subtitle">Transactions requiring manual intervention</p>
+    </div>
+    <div class="page-actions">
+        <button id="selectAllBtn" class="btn btn-secondary" onclick="toggleSelectAll()">Select All</button>
+        <button id="bulkEditBtn" class="btn btn-primary" onclick="openBulkEditModal()" disabled>Bulk Edit (<span id="selectedCount">0</span>)</button>
+    </div>
+</div>
+
+{% if failures %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th style="width: 40px;"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
+                <th>Entry ID</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Current CID</th>
+                <th>Reference</th>
+                <th>Remittance Info</th>
+                <th>Reason</th>
+                <th style="width: 120px;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in failures %}
+            <tr>
+                <td><input type="checkbox" class="txn-checkbox" data-entry-id="{{ item.transaction.entryId }}" onchange="updateBulkEditButton()"></td>
+                <td><code>{{ item.transaction.entryId }}</code></td>
+                <td>
+                    {% if item.type == 'unallocated' %}
+                        <span class="badge badge-warning">Unallocated</span>
+                    {% else %}
+                        <span class="badge badge-danger">Failed</span>
+                    {% endif %}
+                </td>
+                <td><strong>ZAR {{ "%.2f"|format(item.transaction.amount) }}</strong></td>
+                <td><span class="badge badge-info">{{ item.transaction.CID }}</span></td>
+                <td>{{ item.transaction.reference or '-' }}</td>
+                <td title="{{ item.transaction.remittance_info }}">{{ item.transaction.remittance_info or '-' }}</td>
+                <td>
+                    {% if item.failed %}
+                        {{ item.failed.reason }}
+                    {% else %}
+                        No CID found in payment reference
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.is_duplicate %}
+                        <button class="btn btn-warning btn-sm" onclick="openResolveModal('{{ item.transaction.entryId }}')">
+                            Mark Posted
+                        </button>
+                    {% else %}
+                        <button class="btn btn-success btn-sm" onclick="openResolveModal('{{ item.transaction.entryId }}')">
+                            Edit CID
+                        </button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="pagination">
+    {% if pagination.has_prev %}
+        <a href="?page=1">« First</a>
+        <a href="?page={{ pagination.prev_num }}">‹ Prev</a>
+    {% endif %}
+    {% for page_num in pagination.iter_pages() %}
+        {% if page_num %}
+            {% if page_num == pagination.page %}
+                <span class="active">{{ page_num }}</span>
+            {% else %}
+                <a href="?page={{ page_num }}">{{ page_num }}</a>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    {% if pagination.has_next %}
+        <a href="?page={{ pagination.next_num }}">Next ›</a>
+        <a href="?page={{ pagination.pages }}">Last »</a>
+    {% endif %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <p>No failed transactions. All transactions are being processed successfully!</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Single Transaction Edit Modal -->
+<div id="resolveModal" class="modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Assign Customer ID & Post Payment</h3>
+                <button type="button" class="btn-close" onclick="closeResolveModal()"></button>
+            </div>
+            <form id="resolveForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Entry ID:</label>
+                        <input id="modalEntryId" type="text" class="form-control" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount:</label>
+                        <input id="modalAmount" type="text" class="form-control" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Reference:</label>
+                        <input id="modalReference" type="text" class="form-control" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Remittance Info (Description):</label>
+                        <textarea id="modalRemittanceInfo" class="form-control" disabled></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Reason:</label>
+                        <textarea id="modalReason" class="form-control" disabled></textarea>
+                    </div>
+
+                    <!-- Warning message for duplicates -->
+                    <div id="duplicateWarning" class="alert alert-warning alert-border-left mb-md" style="display: none;">
+                        <div class="alert-icon">⚠</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Duplicate Payment Detected</div>
+                            <div class="alert-message">This transaction has been identified as a duplicate payment for the same customer. The CID cannot be changed. You can only mark this transaction as already posted if it was manually captured.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required"><strong>Customer ID (CID):</strong></label>
+                        <div class="input-group">
+                            <input id="manualCID" type="text" class="form-control" placeholder="Enter correct CID" required>
+                            <button type="button" class="input-group-btn btn btn-secondary" onclick="lookupCustomerPayments()">📋 Lookup</button>
+                        </div>
+                    </div>
+
+                    <!-- Payment History Section -->
+                    <div id="paymentHistorySection" class="alert alert-info alert-border-left mb-md" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                            <strong>Last 5 Payments for CID <span id="paymentHistoryCID"></span></strong>
+                            <button type="button" class="btn-close" onclick="closePaymentHistory()"></button>
+                        </div>
+                        <div id="paymentHistoryContent" style="max-height: 250px; overflow-y: auto;">
+                            <!-- Payment history will be displayed here -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Note (Optional):</label>
+                        <select id="noteDropdown" class="form-control" onchange="updateNoteField()">
+                            <option value="">-- Select Standard Note --</option>
+                            <option value="incorrect_reference">Incorrect Reference - Use CID{clientId}</option>
+                            <option value="custom">Custom Note (type below)</option>
+                        </select>
+                        <textarea id="manualNote" class="form-control mt-xs" placeholder="e.g., USE CID123 AS REFERENCE"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-check">
+                            <input type="checkbox" class="form-check-input" id="markAsPostedSingleCheckbox" onchange="toggleSavePostButton()">
+                            <strong>Mark as already posted (skip UISP posting)</strong>
+                        </label>
+                        <small>Check this if this transaction was already manually captured in UISP.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeResolveModal()">Cancel</button>
+                    <button type="button" id="saveOnlyBtn" class="btn btn-primary" onclick="submitResolve(false)">Save Only</button>
+                    <button type="button" id="savePostBtn" class="btn btn-success" onclick="submitResolve(true)">Save & Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Edit Modal -->
+<div id="bulkEditModal" class="modal modal-lg">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Bulk Edit Transactions</h3>
+                <button type="button" class="btn-close" onclick="closeBulkEditModal()"></button>
+            </div>
+            <form id="bulkEditForm">
+                <div class="modal-body">
+                    <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-lg);"><span id="bulkSelectedCount">0</span> transaction(s) selected</p>
+
+                    <div id="bulkTransactionsList" class="card mb-lg" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Transaction list will be populated here -->
+                    </div>
+
+                    <div class="form-group">
+                        <label><strong>Note Template:</strong></label>
+                        <select id="bulkNoteDropdown" class="form-control" onchange="updateBulkNoteField()">
+                            <option value="">-- Select Standard Note --</option>
+                            <option value="incorrect_reference">Incorrect Reference - Use CID{clientId}</option>
+                            <option value="duplicate_payment">Duplicate Payment Detected</option>
+                            <option value="payment_received">Payment Received - Applied to Account</option>
+                            <option value="custom">Custom Note (type below)</option>
+                        </select>
+                        <textarea id="bulkNote" class="form-control mt-xs" placeholder="Note will be applied to all selected transactions"></textarea>
+                        <small>Use {clientId} in your note to auto-replace with the CID of each transaction.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-check">
+                            <input type="checkbox" class="form-check-input" id="markAsPostedCheckbox" onchange="toggleBulkApplyButton()">
+                            <strong>Mark as already posted (skip UISP posting)</strong>
+                        </label>
+                        <small>Check this if these transactions were already manually captured in UISP.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeBulkEditModal()">Cancel</button>
+                    <button type="button" id="bulkApplyBtn" class="btn btn-success" onclick="submitBulkEdit()">Apply to All Selected</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Standard note templates
+const noteTemplates = {
+    'incorrect_reference': 'You have used an incorrect reference, please use CID{clientId} in future to prevent your service from being suspended and EFT admin charges of R100.',
+    'duplicate_payment': 'Duplicate payment detected for CID{clientId}. Please contact support if this is in error.',
+    'payment_received': 'Payment received and applied to account CID{clientId}.'
+};
+
+// Single transaction edit
+function openResolveModal(entryId) {
+    fetch(`/api/failed/${entryId}`)
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('modalEntryId').value = data.entryId;
+            document.getElementById('modalAmount').value = 'ZAR ' + data.amount;
+            document.getElementById('modalReference').value = data.reference || '-';
+            document.getElementById('modalRemittanceInfo').value = data.remittance_info || '-';
+            document.getElementById('modalReason').value = data.reason || 'No CID found in payment reference';
+            document.getElementById('manualNote').value = '';
+            document.getElementById('noteDropdown').value = '';
+            document.getElementById('paymentHistorySection').style.display = 'none';
+            document.getElementById('manualCID').dataset.entryId = entryId;
+
+            // Check if this is a duplicate transaction
+            if (data.is_duplicate) {
+                // Show duplicate warning
+                document.getElementById('duplicateWarning').style.display = 'block';
+
+                // For duplicates: disable CID editing, pre-fill with current CID, auto-check "mark as posted"
+                document.getElementById('manualCID').value = data.current_cid;
+                document.getElementById('manualCID').disabled = true;
+                document.getElementById('manualCID').style.background = '#f5f5f5';
+                document.getElementById('manualCID').style.cursor = 'not-allowed';
+                document.getElementById('markAsPostedSingleCheckbox').checked = true;
+                document.getElementById('markAsPostedSingleCheckbox').disabled = true;
+
+                // Hide the lookup button and note dropdown for duplicates
+                const lookupBtn = document.querySelector('button[onclick="lookupCustomerPayments()"]');
+                if (lookupBtn) lookupBtn.style.display = 'none';
+                document.getElementById('noteDropdown').style.display = 'none';
+
+                // Update button states
+                toggleSavePostButton();
+
+                // Update modal title
+                document.querySelector('#resolveModal .modal-title').textContent = 'Mark Duplicate Payment as Posted';
+            } else {
+                // Hide duplicate warning
+                document.getElementById('duplicateWarning').style.display = 'none';
+
+                // For non-duplicates: enable CID editing
+                document.getElementById('manualCID').value = '';
+                document.getElementById('manualCID').disabled = false;
+                document.getElementById('manualCID').style.background = 'white';
+                document.getElementById('manualCID').style.cursor = 'text';
+                document.getElementById('markAsPostedSingleCheckbox').checked = false;
+                document.getElementById('markAsPostedSingleCheckbox').disabled = false;
+
+                // Show the lookup button and note dropdown
+                const lookupBtn = document.querySelector('button[onclick="lookupCustomerPayments()"]');
+                if (lookupBtn) lookupBtn.style.display = 'inline-block';
+                document.getElementById('noteDropdown').style.display = 'block';
+
+                // Update button states
+                toggleSavePostButton();
+
+                // Update modal title
+                document.querySelector('#resolveModal .modal-title').textContent = 'Assign Customer ID & Post Payment';
+            }
+
+            const modal = document.getElementById('resolveModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+        });
+}
+
+function closeResolveModal() {
+    const modal = document.getElementById('resolveModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
+
+function toggleSavePostButton() {
+    const markAsPosted = document.getElementById('markAsPostedSingleCheckbox').checked;
+    const savePostBtn = document.getElementById('savePostBtn');
+    const saveOnlyBtn = document.getElementById('saveOnlyBtn');
+
+    if (markAsPosted) {
+        // Disable "Save & Post" and change "Save Only" to "Save & Mark Posted"
+        savePostBtn.disabled = true;
+        savePostBtn.style.opacity = '0.5';
+        savePostBtn.style.cursor = 'not-allowed';
+        saveOnlyBtn.textContent = 'Save & Mark Posted';
+        saveOnlyBtn.classList.remove('btn-primary');
+        saveOnlyBtn.classList.add('btn-success');
+    } else {
+        // Re-enable "Save & Post" and restore "Save Only" button
+        savePostBtn.disabled = false;
+        savePostBtn.style.opacity = '1';
+        savePostBtn.style.cursor = 'pointer';
+        saveOnlyBtn.textContent = 'Save Only';
+        saveOnlyBtn.classList.remove('btn-success');
+        saveOnlyBtn.classList.add('btn-primary');
+    }
+}
+
+function updateNoteField() {
+    const dropdown = document.getElementById('noteDropdown');
+    const noteField = document.getElementById('manualNote');
+    const selectedTemplate = dropdown.value;
+
+    if (selectedTemplate && selectedTemplate !== 'custom') {
+        const cid = document.getElementById('manualCID').value || '{clientId}';
+        noteField.value = noteTemplates[selectedTemplate].replace('{clientId}', cid);
+    } else if (selectedTemplate === 'custom') {
+        noteField.value = '';
+    }
+}
+
+function submitResolve(postNow) {
+    const cid = document.getElementById('manualCID').value.trim();
+    const note = document.getElementById('manualNote').value.trim();
+    const entryId = document.getElementById('manualCID').dataset.entryId;
+    const markAsPosted = document.getElementById('markAsPostedSingleCheckbox').checked;
+
+    // Validate CID is required
+    if (!cid || cid === 'unallocated') {
+        const cidField = document.getElementById('manualCID');
+        cidField.style.border = '2px solid #f44336';
+        alert('Please enter a valid CID before saving');
+        setTimeout(() => {
+            cidField.style.border = '2px solid #4CAF50';
+        }, 2000);
+        return;
+    }
+
+    // Additional validation when marking as posted
+    if (markAsPosted) {
+        if (!confirm(`Confirm: Mark transaction as already posted for CID ${cid}?\n\nThis will update the CID and mark the transaction as posted WITHOUT sending to UISP API.`)) {
+            return;
+        }
+    }
+
+    const formData = new FormData();
+    formData.append('cid', cid);
+    formData.append('note', note);
+    formData.append('post_now', postNow ? 'yes' : 'no');
+    formData.append('mark_as_posted', markAsPosted ? 'yes' : 'no');
+
+    fetch(`/update_cid/${entryId}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success' || data.status === 'partial') {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(e => alert('Error: ' + e));
+}
+
+// Bulk edit functionality
+function toggleSelectAll() {
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const checkboxes = document.querySelectorAll('.txn-checkbox');
+    checkboxes.forEach(cb => {
+        cb.checked = selectAllCheckbox.checked;
+    });
+    updateBulkEditButton();
+}
+
+function updateBulkEditButton() {
+    const checkboxes = document.querySelectorAll('.txn-checkbox:checked');
+    const count = checkboxes.length;
+    document.getElementById('selectedCount').textContent = count;
+    document.getElementById('bulkEditBtn').disabled = count === 0;
+}
+
+function openBulkEditModal() {
+    const checkboxes = document.querySelectorAll('.txn-checkbox:checked');
+    const selectedEntryIds = Array.from(checkboxes).map(cb => cb.dataset.entryId);
+
+    if (selectedEntryIds.length === 0) {
+        alert('Please select at least one transaction');
+        return;
+    }
+
+    // Fetch transaction details for all selected
+    Promise.all(selectedEntryIds.map(id => fetch(`/api/failed/${id}`).then(r => r.json())))
+        .then(transactions => {
+            displayBulkTransactions(transactions);
+            document.getElementById('bulkSelectedCount').textContent = transactions.length;
+            document.getElementById('bulkNote').value = '';
+            document.getElementById('bulkNoteDropdown').value = '';
+            document.getElementById('markAsPostedCheckbox').checked = false;
+            const modal = document.getElementById('bulkEditModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+        });
+}
+
+function displayBulkTransactions(transactions) {
+    const listContainer = document.getElementById('bulkTransactionsList');
+    let html = '<table style="width: 100%; font-size: 12px;">';
+    html += '<thead><tr><th>Entry ID</th><th>Current CID</th><th>Amount</th><th>Reference</th><th>New CID</th><th>Lookup</th></tr></thead><tbody>';
+
+    transactions.forEach(txn => {
+        const cidInputId = `bulk-cid-${txn.entryId}`;
+        html += `<tr data-entry-id="${txn.entryId}">
+            <td><code>${txn.entryId}</code></td>
+            <td>${txn.current_cid}</td>
+            <td>ZAR ${txn.amount}</td>
+            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">${txn.reference || '-'}</td>
+            <td><input type="text" id="${cidInputId}" class="bulk-cid-input" data-entry-id="${txn.entryId}" value="${txn.current_cid === 'unallocated' ? '' : txn.current_cid}"
+                placeholder="Enter CID" style="width: 80px; padding: 4px; border: 1px solid #ddd; border-radius: 3px;"></td>
+            <td>
+                <button type="button" onclick="lookupBulkPayment('${txn.entryId}', document.getElementById('${cidInputId}'))"
+                    style="padding: 2px 6px; font-size: 11px; background: #2196F3; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                    📋 History
+                </button>
+            </td>
+        </tr>`;
+    });
+
+    html += '</tbody></table>';
+    listContainer.innerHTML = html;
+}
+
+function closeBulkEditModal() {
+    const modal = document.getElementById('bulkEditModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
+
+function toggleBulkApplyButton() {
+    const markAsPosted = document.getElementById('markAsPostedCheckbox').checked;
+    const bulkApplyBtn = document.getElementById('bulkApplyBtn');
+
+    if (markAsPosted) {
+        bulkApplyBtn.textContent = 'Save & Mark All as Posted';
+    } else {
+        bulkApplyBtn.textContent = 'Apply to All Selected';
+    }
+}
+
+function updateBulkNoteField() {
+    const dropdown = document.getElementById('bulkNoteDropdown');
+    const noteField = document.getElementById('bulkNote');
+    const selectedTemplate = dropdown.value;
+
+    if (selectedTemplate && selectedTemplate !== 'custom') {
+        noteField.value = noteTemplates[selectedTemplate];
+    } else if (selectedTemplate === 'custom') {
+        noteField.value = '';
+    }
+}
+
+function submitBulkEdit() {
+    const cidInputs = document.querySelectorAll('.bulk-cid-input');
+    const note = document.getElementById('bulkNote').value.trim();
+    const markAsPosted = document.getElementById('markAsPostedCheckbox').checked;
+
+    const updates = [];
+    let hasError = false;
+    let firstErrorInput = null;
+
+    cidInputs.forEach(input => {
+        const entryId = input.dataset.entryId;
+        const cid = input.value.trim();
+
+        if (!cid || cid === 'unallocated') {
+            input.style.border = '2px solid #f44336';
+            if (!firstErrorInput) firstErrorInput = input;
+            alert(`Please enter a valid CID for transaction ${entryId}`);
+            hasError = true;
+            setTimeout(() => {
+                input.style.border = '1px solid #ddd';
+            }, 2000);
+            return;
+        }
+
+        // Replace {clientId} in note with actual CID
+        const personalizedNote = note.replace(/{clientId}/g, cid);
+
+        updates.push({
+            entryId: entryId,
+            cid: cid,
+            note: personalizedNote,
+            markAsPosted: markAsPosted
+        });
+    });
+
+    if (hasError) {
+        if (firstErrorInput) firstErrorInput.focus();
+        return;
+    }
+
+    // Confirmation message
+    let confirmMsg = `Update ${updates.length} transaction(s)?`;
+    if (markAsPosted) {
+        confirmMsg = `Mark ${updates.length} transaction(s) as already posted?\n\nThis will update CIDs and mark all as posted WITHOUT sending to UISP API.`;
+    }
+
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+
+    // Submit bulk update
+    fetch('/bulk_update_transactions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ updates: updates })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert(`Successfully updated ${data.updated} transaction(s)`);
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(e => alert('Error: ' + e));
+}
+
+// Payment history lookup
+function lookupCustomerPayments() {
+    const cid = document.getElementById('manualCID').value.trim();
+
+    if (!cid || cid === 'unallocated') {
+        alert('Please enter a valid CID first');
+        return;
+    }
+
+    // Show loading message
+    const historySection = document.getElementById('paymentHistorySection');
+    const historyContent = document.getElementById('paymentHistoryContent');
+    document.getElementById('paymentHistoryCID').textContent = cid;
+    historyContent.innerHTML = '<p style="text-align: center; color: #666;">Loading payment history...</p>';
+    historySection.style.display = 'block';
+
+    fetch(`/api/customer_payments/${cid}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                displayPaymentHistory(data);
+            } else {
+                historyContent.innerHTML = `<p style="color: #f44336;">${data.message || 'Error loading payment history'}</p>`;
+            }
+        })
+        .catch(e => {
+            historyContent.innerHTML = `<p style="color: #f44336;">Error: ${e.message}</p>`;
+        });
+}
+
+function displayPaymentHistory(data) {
+    const historyContent = document.getElementById('paymentHistoryContent');
+
+    if (!data.recent_payments || data.recent_payments.length === 0) {
+        historyContent.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #666;">
+                <p><strong>No payment history found</strong></p>
+                <p style="font-size: 12px;">This customer has not made any payments yet.</p>
+            </div>`;
+        return;
+    }
+
+    let html = `<p style="margin-bottom: 10px; font-size: 12px; color: #666;">Total payments: ${data.total_payments}</p>`;
+    html += '<div style="display: flex; flex-direction: column; gap: 10px;">';
+
+    data.recent_payments.forEach((payment, index) => {
+        const date = new Date(payment.createdDate);
+        const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        const isRecent = index === 0;
+
+        html += `
+            <div style="padding: 10px; background: ${isRecent ? '#e8f5e9' : 'white'}; border: 1px solid ${isRecent ? '#4CAF50' : '#ddd'}; border-radius: 4px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <strong style="color: ${isRecent ? '#2E7D32' : '#333'};">${payment.currencyCode} ${payment.amount}</strong>
+                    <span style="font-size: 11px; color: #666;">${formattedDate}</span>
+                </div>
+                <div style="font-size: 12px; color: #666;">
+                    <div><strong>Method:</strong> ${payment.method}</div>
+                    ${payment.providerName ? `<div><strong>Provider:</strong> ${payment.providerName}</div>` : ''}
+                    ${payment.providerPaymentId ? `<div><strong>Provider ID:</strong> ${payment.providerPaymentId}</div>` : ''}
+                    ${payment.note ? `<div><strong>Note:</strong> ${payment.note}</div>` : ''}
+                </div>
+                ${isRecent ? '<div style="margin-top: 5px; font-size: 11px; color: #2E7D32;"><strong>⭐ MOST RECENT</strong></div>' : ''}
+            </div>`;
+    });
+
+    html += '</div>';
+
+    // Add decision helper
+    const lastPayment = data.recent_payments[0];
+    const lastPaymentDate = new Date(lastPayment.createdDate);
+    const daysSinceLastPayment = Math.floor((new Date() - lastPaymentDate) / (1000 * 60 * 60 * 24));
+
+    html += `
+        <div style="margin-top: 15px; padding: 10px; background: #fff3e0; border-left: 3px solid #ff9800; border-radius: 4px;">
+            <strong style="color: #E65100;">Decision Helper:</strong>
+            <p style="margin: 5px 0; font-size: 12px;">Last payment was <strong>${daysSinceLastPayment} days ago</strong> (${lastPayment.currencyCode} ${lastPayment.amount})</p>
+            <p style="margin: 5px 0; font-size: 12px;">
+                ${daysSinceLastPayment <= 7 ?
+                    '⚠️ <strong>Recent payment detected!</strong> Check if this is a duplicate before posting.' :
+                    '✅ Last payment was more than 7 days ago - likely safe to post.'}
+            </p>
+        </div>`;
+
+    historyContent.innerHTML = html;
+}
+
+function closePaymentHistory() {
+    document.getElementById('paymentHistorySection').style.display = 'none';
+}
+
+// Bulk lookup for individual CID in bulk edit
+function lookupBulkPayment(entryId, cidInputElement) {
+    const cid = cidInputElement.value.trim();
+
+    if (!cid || cid === 'unallocated') {
+        alert('Please enter a valid CID first');
+        return;
+    }
+
+    // Create a temporary modal for payment history in bulk edit
+    const existingModal = document.getElementById('bulkPaymentHistoryModal');
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'bulkPaymentHistoryModal';
+    modal.style.cssText = 'display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000;';
+    modal.innerHTML = `
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 4px; min-width: 500px; max-width: 90%; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;">Payment History - CID ${cid}</h3>
+                <button onclick="document.getElementById('bulkPaymentHistoryModal').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+            </div>
+            <div id="bulkPaymentHistoryContent">Loading...</div>
+        </div>`;
+
+    document.body.appendChild(modal);
+
+    fetch(`/api/customer_payments/${cid}`)
+        .then(r => r.json())
+        .then(data => {
+            const content = document.getElementById('bulkPaymentHistoryContent');
+            if (data.status === 'success') {
+                let html = displayPaymentHistoryHTML(data);
+                content.innerHTML = html;
+            } else {
+                content.innerHTML = `<p style="color: #f44336;">${data.message || 'Error loading payment history'}</p>`;
+            }
+        })
+        .catch(e => {
+            document.getElementById('bulkPaymentHistoryContent').innerHTML = `<p style="color: #f44336;">Error: ${e.message}</p>`;
+        });
+}
+
+function displayPaymentHistoryHTML(data) {
+    if (!data.recent_payments || data.recent_payments.length === 0) {
+        return `
+            <div style="text-align: center; padding: 20px; color: #666;">
+                <p><strong>No payment history found</strong></p>
+                <p style="font-size: 12px;">This customer has not made any payments yet.</p>
+            </div>`;
+    }
+
+    let html = `<p style="margin-bottom: 10px; font-size: 12px; color: #666;">Total payments: ${data.total_payments}</p>`;
+    html += '<div style="display: flex; flex-direction: column; gap: 10px;">';
+
+    data.recent_payments.forEach((payment, index) => {
+        const date = new Date(payment.createdDate);
+        const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        const isRecent = index === 0;
+
+        html += `
+            <div style="padding: 10px; background: ${isRecent ? '#e8f5e9' : '#f9f9f9'}; border: 1px solid ${isRecent ? '#4CAF50' : '#ddd'}; border-radius: 4px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <strong style="color: ${isRecent ? '#2E7D32' : '#333'};">${payment.currencyCode} ${payment.amount}</strong>
+                    <span style="font-size: 11px; color: #666;">${formattedDate}</span>
+                </div>
+                <div style="font-size: 12px; color: #666;">
+                    <div><strong>Method:</strong> ${payment.method}</div>
+                    ${payment.providerName ? `<div><strong>Provider:</strong> ${payment.providerName}</div>` : ''}
+                    ${payment.providerPaymentId ? `<div><strong>Provider ID:</strong> ${payment.providerPaymentId}</div>` : ''}
+                    ${payment.note ? `<div><strong>Note:</strong> ${payment.note}</div>` : ''}
+                </div>
+                ${isRecent ? '<div style="margin-top: 5px; font-size: 11px; color: #2E7D32;"><strong>⭐ MOST RECENT</strong></div>' : ''}
+            </div>`;
+    });
+
+    html += '</div>';
+
+    // Add decision helper
+    const lastPayment = data.recent_payments[0];
+    const lastPaymentDate = new Date(lastPayment.createdDate);
+    const daysSinceLastPayment = Math.floor((new Date() - lastPaymentDate) / (1000 * 60 * 60 * 24));
+
+    html += `
+        <div style="margin-top: 15px; padding: 10px; background: #fff3e0; border-left: 3px solid #ff9800; border-radius: 4px;">
+            <strong style="color: #E65100;">Decision Helper:</strong>
+            <p style="margin: 5px 0; font-size: 12px;">Last payment was <strong>${daysSinceLastPayment} days ago</strong> (${lastPayment.currencyCode} ${lastPayment.amount})</p>
+            <p style="margin: 5px 0; font-size: 12px;">
+                ${daysSinceLastPayment <= 7 ?
+                    '⚠️ <strong>Recent payment detected!</strong> Check if this is a duplicate before posting.' :
+                    '✅ Last payment was more than 7 days ago - likely safe to post.'}
+            </p>
+        </div>`;
+
+    return html;
+}
+
+window.onclick = function(e) {
+    const resolveModal = document.getElementById('resolveModal');
+    const bulkModal = document.getElementById('bulkEditModal');
+    if (e.target === resolveModal) {
+        closeResolveModal();
+    }
+    if (e.target === bulkModal) {
+        closeBulkEditModal();
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Syncing UISP Data...</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .sync-container {
+            text-align: center;
+            max-width: 500px;
+        }
+        .sync-icon {
+            font-size: 80px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        h1 { font-size: 28px; margin-bottom: 10px; }
+        p { font-size: 16px; opacity: 0.9; margin-bottom: 20px; }
+
+        .sync-status {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 30px;
+        }
+
+        .status-text {
+            font-size: 14px;
+            margin: 10px 0;
+            opacity: 0.95;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #fff;
+            border-radius: 2px;
+            animation: progress 2s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 100%; }
+            100% { width: 0%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sync-container">
+        <div class="sync-icon">🔄</div>
+        <h1>Syncing UISP Data</h1>
+        <p>Fetching latest customer information...</p>
+
+        <div class="sync-status">
+            <div class="status-text">Welcome, {{ current_user.full_name or current_user.username }}!</div>
+            <div class="status-text">Syncing {{ customer_count }} customers from UISP...</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Redirect to dashboard after 3 seconds or when sync completes
+        setTimeout(function() {
+            window.location.href = '/';
+        }, 3000);
+    </script>
+</body>
+</html>

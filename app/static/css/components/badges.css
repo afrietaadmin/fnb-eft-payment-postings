@@ -1,0 +1,171 @@
+/* ============================================================================
+   BADGES - Status and tag indicators
+   ============================================================================ */
+
+/* Base Badge */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+/* Badge Variants */
+.badge-primary {
+  background: var(--color-primary-light);
+  color: var(--color-primary-darker);
+}
+
+.badge-success {
+  background: var(--color-success-light);
+  color: #155724;
+}
+
+.badge-danger {
+  background: var(--color-danger-light);
+  color: #721c24;
+}
+
+.badge-warning {
+  background: var(--color-warning-light);
+  color: #856404;
+}
+
+.badge-info {
+  background: var(--color-info-light);
+  color: #0c5460;
+}
+
+.badge-neutral {
+  background: var(--color-neutral-light);
+  color: var(--color-text);
+}
+
+/* Solid Badge Variants */
+.badge-solid-primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.badge-solid-success {
+  background: var(--color-success);
+  color: white;
+}
+
+.badge-solid-danger {
+  background: var(--color-danger);
+  color: white;
+}
+
+.badge-solid-warning {
+  background: var(--color-warning);
+  color: white;
+}
+
+.badge-solid-info {
+  background: var(--color-info);
+  color: white;
+}
+
+/* Badge Sizes */
+.badge-sm {
+  padding: 2px 4px;
+  font-size: 10px;
+}
+
+.badge-lg {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* Status Badge (pill-shaped) */
+.badge-pill {
+  border-radius: 12px;
+  padding: 4px 12px;
+}
+
+/* Badge with Icon */
+.badge-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-icon::before {
+  content: '●';
+  font-size: 6px;
+}
+
+/* Special Status Badges */
+.badge-posted {
+  background: var(--color-success-light);
+  color: #155724;
+}
+
+.badge-pending {
+  background: var(--color-warning-light);
+  color: #856404;
+}
+
+.badge-failed {
+  background: var(--color-danger-light);
+  color: #721c24;
+}
+
+.badge-unallocated {
+  background: #ffe0b2;
+  color: #e65100;
+}
+
+.badge-duplicate {
+  background: #ffe0b2;
+  color: #e65100;
+}
+
+.badge-archived {
+  background: #e0e0e0;
+  color: #424242;
+}
+
+/* Badge Counter (for notifications) */
+.badge-counter {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  background: var(--color-danger);
+  color: white;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* Badge Group */
+.badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+/* Responsive Badge */
+@media (max-width: 768px) {
+  .badge {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+
+  .badge-lg {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}

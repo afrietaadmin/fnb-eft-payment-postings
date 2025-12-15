@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-12-05T05:49:52.130005+00:00",
+  "source": "manual_web_ui",
+  "entryId": "20251202000005",
+  "amount": 825.0,
+  "reference": "",
+  "remittance_info": "FAZIMA PTYLTD",
+  "uisp_payload": {
+    "clientId": 421,
+    "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+    "currencyCode": "ZAR",
+    "applyToInvoicesAutomatically": true,
+    "providerPaymentId": "20251202000005",
+    "providerPaymentTime": "2025-12-05T05:49:52+0000",
+    "providerName": "FNB-EFT",
+    "amount": 825.0,
+    "userId": 1000,
+    "note": "You have used an incorrect reference, please use CID421 in future to prevent your service from being suspended and EFT admin charges of R100. | TXN: 20251202000005"
+  }
+}

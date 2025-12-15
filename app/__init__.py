@@ -63,4 +63,25 @@ def create_app():
         from .models import User
         return User.query.get(int(user_id))
 
+    @app.context_processor
+    def inject_stats():
+        """Make stats available to all templates."""
+        from .models import Transaction, FailedTransaction
+        try:
+            stats = {
+                'total_transactions': Transaction.query.count(),
+                'posted': Transaction.query.filter_by(posted='yes').count(),
+                'pending': Transaction.query.filter_by(posted='no').count(),
+                'failed': FailedTransaction.query.filter_by(resolved=False).count(),
+            }
+        except Exception:
+            # If database is not available, return empty stats
+            stats = {
+                'total_transactions': 0,
+                'posted': 0,
+                'pending': 0,
+                'failed': 0,
+            }
+        return dict(stats=stats)
+
     return app

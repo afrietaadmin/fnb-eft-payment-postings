@@ -74,7 +74,7 @@ def login():
     session.permanent = True
     log_activity('login_success', f'User logged in', endpoint='auth.login', method='POST')
 
-    # Refresh UISP data in background (non-blocking)
+    # Show loading page while syncing UISP data
     logger.info(f"=== Starting UISP data sync for user {user.username} ===")
     try:
         handler = UISPSuspensionHandler()
@@ -121,7 +121,8 @@ def login():
         flash('You must change your password on first login', 'warning')
         return redirect(url_for('auth.change_password_page'))
 
-    return redirect(request.args.get('next', url_for('main.index')))
+    # Show loading page with sync notification before redirecting
+    return render_template('login_sync_loading.html', customer_count=len(customers))
 
 @auth_bp.route('/logout', methods=['GET'])
 @login_required

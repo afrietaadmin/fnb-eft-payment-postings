@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Quotes{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Open Quotes</h1>
+        <p class="page-subtitle">Active quotes from non-archived customers</p>
+    </div>
+</div>
+
+{% if error %}
+<div class="alert alert-danger alert-border-left" role="alert">
+    <div class="alert-icon">⚠</div>
+    <div class="alert-content">
+        <div class="alert-title">Error</div>
+        <div class="alert-message">{{ error }}</div>
+    </div>
+</div>
+{% endif %}
+
+{% if quotes %}
+    <div class="alert alert-info alert-border-left mb-lg" role="alert">
+        <div class="alert-icon">📋</div>
+        <div class="alert-content">
+            <div class="alert-message">Showing <strong>{{ quotes | length }}</strong> open quote(s) from non-archived customers</div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        {% for item in quotes %}
+        <div class="card mb-md">
+            <div class="card-body" style="display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-md); padding: var(--spacing-md); flex-wrap: nowrap;">
+                <div style="flex: 0 0 auto; display: flex; align-items: center; gap: var(--spacing-sm);">
+                    <span class="badge badge-primary">CID: {{ item.cid }}</span>
+                </div>
+                <div style="flex: 1 1 auto; display: flex; align-items: center; gap: var(--spacing-md); min-width: 0;">
+                    <a href="https://uisp-ros1.afrieta.com/crm/client/quote/{{ item.quote_id }}" target="_blank" class="btn btn-link btn-sm">{{ item.quote_id }}</a>
+                    <code style="font-size: var(--font-size-xs); background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: var(--radius-sm); white-space: nowrap; flex-shrink: 0;">{{ item.quote_number or 'N/A' }}</code>
+                    <code style="font-size: var(--font-size-xs); background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: var(--radius-sm); white-space: nowrap; flex-shrink: 0;">{{ item.service_id or 'N/A' }}</code>
+                    <span style="font-size: var(--font-size-xs); white-space: nowrap; flex-shrink: 0;">{% if item.created_date %}{{ item.created_date[:10] }}{% else %}N/A{% endif %}</span>
+                    <span style="font-size: var(--font-size-xs); white-space: nowrap; flex-shrink: 0;">{% if item.valid_until %}{{ item.valid_until[:10] }}{% else %}N/A{% endif %}</span>
+                </div>
+                <div style="flex: 0 0 auto; display: flex; align-items: center; white-space: nowrap;">
+                    <span style="font-weight: var(--font-weight-semibold); color: var(--color-success);">
+                        {% if item.currency_code %}{{ item.currency_code }}{% else %}ZAR{% endif %} {{ "%.2f"|format(item.total or item.price or 0) }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card">
+        <div class="card-body" style="text-align: center; padding: var(--spacing-2xl);">
+            <div style="font-size: 48px; margin-bottom: var(--spacing-lg);">📋</div>
+            <h3 style="margin: 0 0 var(--spacing-sm) 0; color: var(--color-text);">No open quotes</h3>
+            <p style="margin: 0; color: var(--color-text-secondary);">All quotes have been processed or are from archived customers.</p>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,3769 @@
+{
+  "timestamp": "2025-12-04T15:10:56.336957+00:00",
+  "total_requests": 198,
+  "total_amount": 112454.99,
+  "requests": [
+    {
+      "entryId": "20251129000001",
+      "amount": 400.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID414",
+      "remittance_info": "FNB APP PAYMENT FROM  CID414",
+      "uisp_payload": {
+        "clientId": 414,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000001",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 400.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000001"
+      }
+    },
+    {
+      "entryId": "20251129000002",
+      "amount": 825.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID167",
+      "remittance_info": "FNB APP PAYMENT FROM  CID167",
+      "uisp_payload": {
+        "clientId": 167,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000002",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 825.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000002"
+      }
+    },
+    {
+      "entryId": "20251129000003",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID154",
+      "remittance_info": "FNB APP PAYMENT FROM  CID154",
+      "uisp_payload": {
+        "clientId": 154,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000003",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000003"
+      }
+    },
+    {
+      "entryId": "20251129000006",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID13",
+      "remittance_info": "FNB APP PAYMENT FROM  CID13",
+      "uisp_payload": {
+        "clientId": 13,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000006",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000006"
+      }
+    },
+    {
+      "entryId": "20251129000007",
+      "amount": 329.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID303",
+      "remittance_info": "FNB APP PAYMENT FROM  CID303",
+      "uisp_payload": {
+        "clientId": 303,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000007",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 329.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000007"
+      }
+    },
+    {
+      "entryId": "20251201000001",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID361",
+      "remittance_info": "FNB APP PAYMENT FROM  CID361",
+      "uisp_payload": {
+        "clientId": 361,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000001",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000001"
+      }
+    },
+    {
+      "entryId": "20251201000006",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID272",
+      "remittance_info": "FNB APP PAYMENT FROM  CID272",
+      "uisp_payload": {
+        "clientId": 272,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000006",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000006"
+      }
+    },
+    {
+      "entryId": "20251201000007",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "280GCN58T0",
+      "remittance_info": "CID459",
+      "uisp_payload": {
+        "clientId": 459,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000007",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000007"
+      }
+    },
+    {
+      "entryId": "20251201000008",
+      "amount": 652.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID023",
+      "remittance_info": "FNB APP PAYMENT FROM  CID023",
+      "uisp_payload": {
+        "clientId": 23,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000008",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 652.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000008"
+      }
+    },
+    {
+      "entryId": "20251201000009",
+      "amount": 680.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "ACI-R0044 CID44",
+      "remittance_info": "ACI-R0044 CID44",
+      "uisp_payload": {
+        "clientId": 44,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000009",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 680.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000009"
+      }
+    },
+    {
+      "entryId": "20251201000010",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID422",
+      "remittance_info": "CID422",
+      "uisp_payload": {
+        "clientId": 422,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000010",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000010"
+      }
+    },
+    {
+      "entryId": "20251201000011",
+      "amount": 1800.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID189",
+      "remittance_info": "FNB APP PAYMENT FROM  CID189",
+      "uisp_payload": {
+        "clientId": 189,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000011",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 1800.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000011"
+      }
+    },
+    {
+      "entryId": "20251201000012",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID 129",
+      "remittance_info": "FNB APP PAYMENT FROM  CID 129",
+      "uisp_payload": {
+        "clientId": 129,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000012",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000012"
+      }
+    },
+    {
+      "entryId": "20251201000013",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID259",
+      "remittance_info": "FNB APP PAYMENT FROM  CID259",
+      "uisp_payload": {
+        "clientId": 259,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000013",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000013"
+      }
+    },
+    {
+      "entryId": "20251201000014",
+      "amount": 819.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID48",
+      "remittance_info": "FNB APP PAYMENT FROM  CID48",
+      "uisp_payload": {
+        "clientId": 48,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000014",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 819.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000014"
+      }
+    },
+    {
+      "entryId": "20251201000016",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID425",
+      "remittance_info": "FNB APP PAYMENT FROM  CID425",
+      "uisp_payload": {
+        "clientId": 425,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000016",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000016"
+      }
+    },
+    {
+      "entryId": "20251201000017",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "",
+      "remittance_info": "CID-54",
+      "uisp_payload": {
+        "clientId": 54,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000017",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000017"
+      }
+    },
+    {
+      "entryId": "20251201000018",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "",
+      "remittance_info": "CID 352",
+      "uisp_payload": {
+        "clientId": 352,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000018",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000018"
+      }
+    },
+    {
+      "entryId": "20251201000019",
+      "amount": 819.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "",
+      "remittance_info": "ABSA BANK CID134",
+      "uisp_payload": {
+        "clientId": 134,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000019",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 819.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000019"
+      }
+    },
+    {
+      "entryId": "20251201000020",
+      "amount": 1005.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "",
+      "remittance_info": "ABSA BANK cid 379",
+      "uisp_payload": {
+        "clientId": 379,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000020",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 1005.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000020"
+      }
+    },
+    {
+      "entryId": "20251201000021",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID120",
+      "remittance_info": "FNB APP PAYMENT FROM  CID120",
+      "uisp_payload": {
+        "clientId": 120,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000021",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000021"
+      }
+    },
+    {
+      "entryId": "20251202000002",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID466",
+      "remittance_info": "FNB APP PAYMENT FROM  CID466",
+      "uisp_payload": {
+        "clientId": 466,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000002",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000002"
+      }
+    },
+    {
+      "entryId": "20251202000003",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "",
+      "remittance_info": "CID58",
+      "uisp_payload": {
+        "clientId": 58,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000003",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000003"
+      }
+    },
+    {
+      "entryId": "20251202000004",
+      "amount": 800.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "",
+      "remittance_info": "CID395",
+      "uisp_payload": {
+        "clientId": 395,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000004",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 800.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000004"
+      }
+    },
+    {
+      "entryId": "20251202000006",
+      "amount": 949.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "",
+      "remittance_info": "CID17",
+      "uisp_payload": {
+        "clientId": 17,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000006",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 949.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000006"
+      }
+    },
+    {
+      "entryId": "20251203000001",
+      "amount": 329.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID 831 FATIMA BHAB",
+      "remittance_info": "FNB APP PAYMENT FROM  CID 831 FATIMA BHAB",
+      "uisp_payload": {
+        "clientId": 831,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251203000001",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 329.0,
+        "userId": 1000,
+        "note": "TXN: 20251203000001"
+      }
+    },
+    {
+      "entryId": "20251203000002",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID49",
+      "remittance_info": "FNB APP PAYMENT FROM  CID49",
+      "uisp_payload": {
+        "clientId": 49,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251203000002",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251203000002"
+      }
+    },
+    {
+      "entryId": "20251203000003",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID384",
+      "remittance_info": "CID384",
+      "uisp_payload": {
+        "clientId": 384,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251203000003",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251203000003"
+      }
+    },
+    {
+      "entryId": "20251203000004",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID341",
+      "remittance_info": "FNB APP PAYMENT FROM  CID341",
+      "uisp_payload": {
+        "clientId": 341,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251203000004",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251203000004"
+      }
+    },
+    {
+      "entryId": "20251203000005",
+      "amount": 359.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "CID437",
+      "remittance_info": "FNB APP PAYMENT FROM  CID437",
+      "uisp_payload": {
+        "clientId": 437,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251203000005",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 359.0,
+        "userId": 1000,
+        "note": "TXN: 20251203000005"
+      }
+    },
+    {
+      "entryId": "20251203000006",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "",
+      "remittance_info": "CID67 AIYUB MULLA",
+      "uisp_payload": {
+        "clientId": 67,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251203000006",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251203000006"
+      }
+    },
+    {
+      "entryId": "20251203000007",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID278",
+      "uisp_payload": {
+        "clientId": 278,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251203000007",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251203000007"
+      }
+    },
+    {
+      "entryId": "20251203000008",
+      "amount": 1250.0,
+      "account": "REDACTED_ACCOUNT_1",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID201",
+      "uisp_payload": {
+        "clientId": 201,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251203000008",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 1250.0,
+        "userId": 1000,
+        "note": "TXN: 20251203000008"
+      }
+    },
+    {
+      "entryId": "20251129000008",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1129",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1129",
+      "uisp_payload": {
+        "clientId": 1129,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000008",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000008"
+      }
+    },
+    {
+      "entryId": "20251129000010",
+      "amount": 333.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1220",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1220",
+      "uisp_payload": {
+        "clientId": 1220,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000010",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 333.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000010"
+      }
+    },
+    {
+      "entryId": "20251129000011",
+      "amount": 399.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID150",
+      "remittance_info": "FNB APP PAYMENT FROM  CID150",
+      "uisp_payload": {
+        "clientId": 150,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000011",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 399.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000011"
+      }
+    },
+    {
+      "entryId": "20251129000012",
+      "amount": 410.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID213",
+      "remittance_info": "FNB APP PAYMENT FROM  CID213",
+      "uisp_payload": {
+        "clientId": 213,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000012",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 410.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000012"
+      }
+    },
+    {
+      "entryId": "20251129000013",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "342b277da4",
+      "remittance_info": "CID1127",
+      "uisp_payload": {
+        "clientId": 1127,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000013",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000013"
+      }
+    },
+    {
+      "entryId": "20251129000014",
+      "amount": 391.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "cid780",
+      "remittance_info": "cid780",
+      "uisp_payload": {
+        "clientId": 780,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000014",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 391.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000014"
+      }
+    },
+    {
+      "entryId": "20251129000015",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID741",
+      "remittance_info": "FNB APP PAYMENT FROM  CID741",
+      "uisp_payload": {
+        "clientId": 741,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000015",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000015"
+      }
+    },
+    {
+      "entryId": "20251129000016",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID353",
+      "remittance_info": "FNB APP PAYMENT FROM  CID353",
+      "uisp_payload": {
+        "clientId": 353,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000016",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000016"
+      }
+    },
+    {
+      "entryId": "20251129000017",
+      "amount": 600.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1254",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1254",
+      "uisp_payload": {
+        "clientId": 1254,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000017",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 600.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000017"
+      }
+    },
+    {
+      "entryId": "20251129000018",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID368",
+      "remittance_info": "FNB APP PAYMENT FROM  CID368",
+      "uisp_payload": {
+        "clientId": 368,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000018",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000018"
+      }
+    },
+    {
+      "entryId": "20251129000019",
+      "amount": 589.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1228",
+      "remittance_info": "CID1228",
+      "uisp_payload": {
+        "clientId": 1228,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000019",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 589.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000019"
+      }
+    },
+    {
+      "entryId": "20251129000020",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "349e2472a3",
+      "remittance_info": "CID696",
+      "uisp_payload": {
+        "clientId": 696,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000020",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000020"
+      }
+    },
+    {
+      "entryId": "20251129000021",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1000",
+      "remittance_info": "CID1000",
+      "uisp_payload": {
+        "clientId": 1000,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000021",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000021"
+      }
+    },
+    {
+      "entryId": "20251129000022",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "34bab24915",
+      "remittance_info": "Cid140",
+      "uisp_payload": {
+        "clientId": 140,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000022",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000022"
+      }
+    },
+    {
+      "entryId": "20251129000023",
+      "amount": 489.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1211",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1211",
+      "uisp_payload": {
+        "clientId": 1211,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000023",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 489.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000023"
+      }
+    },
+    {
+      "entryId": "20251129000024",
+      "amount": 1045.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1087",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1087",
+      "uisp_payload": {
+        "clientId": 1087,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000024",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 1045.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000024"
+      }
+    },
+    {
+      "entryId": "20251129000025",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1277",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1277",
+      "uisp_payload": {
+        "clientId": 1277,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000025",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000025"
+      }
+    },
+    {
+      "entryId": "20251129000026",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID607",
+      "remittance_info": "FNB APP PAYMENT FROM  CID607",
+      "uisp_payload": {
+        "clientId": 607,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000026",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000026"
+      }
+    },
+    {
+      "entryId": "20251129000027",
+      "amount": 400.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1026",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1026",
+      "uisp_payload": {
+        "clientId": 1026,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000027",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 400.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000027"
+      }
+    },
+    {
+      "entryId": "20251129000028",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID910",
+      "remittance_info": "FNB APP PAYMENT FROM  CID910",
+      "uisp_payload": {
+        "clientId": 910,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000028",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000028"
+      }
+    },
+    {
+      "entryId": "20251129000029",
+      "amount": 819.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID3",
+      "remittance_info": "FNB APP PAYMENT FROM  CID3",
+      "uisp_payload": {
+        "clientId": 3,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000029",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 819.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000029"
+      }
+    },
+    {
+      "entryId": "20251129000030",
+      "amount": 440.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "349d4d80f3",
+      "remittance_info": "CID752 GH LEEUW",
+      "uisp_payload": {
+        "clientId": 752,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000030",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 440.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000030"
+      }
+    },
+    {
+      "entryId": "20251129000031",
+      "amount": 489.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID713",
+      "remittance_info": "CID713",
+      "uisp_payload": {
+        "clientId": 713,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000031",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 489.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000031"
+      }
+    },
+    {
+      "entryId": "20251129000032",
+      "amount": 450.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID843",
+      "remittance_info": "ADT CASH DEPO00665003 CID843",
+      "uisp_payload": {
+        "clientId": 843,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000032",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 450.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000032"
+      }
+    },
+    {
+      "entryId": "20251129000033",
+      "amount": 400.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID743",
+      "uisp_payload": {
+        "clientId": 743,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000033",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 400.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000033"
+      }
+    },
+    {
+      "entryId": "20251129000034",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID593",
+      "uisp_payload": {
+        "clientId": 593,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000034",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000034"
+      }
+    },
+    {
+      "entryId": "20251129000035",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "ABSA BANK CID615",
+      "uisp_payload": {
+        "clientId": 615,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000035",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000035"
+      }
+    },
+    {
+      "entryId": "20251129000036",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID736",
+      "uisp_payload": {
+        "clientId": 736,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000036",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000036"
+      }
+    },
+    {
+      "entryId": "20251129000037",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID512",
+      "uisp_payload": {
+        "clientId": 512,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000037",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000037"
+      }
+    },
+    {
+      "entryId": "20251129000038",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID565",
+      "uisp_payload": {
+        "clientId": 565,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000038",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000038"
+      }
+    },
+    {
+      "entryId": "20251129000039",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID526",
+      "uisp_payload": {
+        "clientId": 526,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000039",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000039"
+      }
+    },
+    {
+      "entryId": "20251129000040",
+      "amount": 449.99,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID1103",
+      "uisp_payload": {
+        "clientId": 1103,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000040",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.99,
+        "userId": 1000,
+        "note": "TXN: 20251129000040"
+      }
+    },
+    {
+      "entryId": "20251129000041",
+      "amount": 450.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID452",
+      "uisp_payload": {
+        "clientId": 452,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000041",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 450.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000041"
+      }
+    },
+    {
+      "entryId": "20251129000042",
+      "amount": 550.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID660",
+      "uisp_payload": {
+        "clientId": 660,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000042",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 550.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000042"
+      }
+    },
+    {
+      "entryId": "20251129000043",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID1150",
+      "uisp_payload": {
+        "clientId": 1150,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000043",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000043"
+      }
+    },
+    {
+      "entryId": "20251129000044",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID400",
+      "uisp_payload": {
+        "clientId": 400,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000044",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000044"
+      }
+    },
+    {
+      "entryId": "20251129000045",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID927",
+      "uisp_payload": {
+        "clientId": 927,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000045",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000045"
+      }
+    },
+    {
+      "entryId": "20251129000046",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID975",
+      "uisp_payload": {
+        "clientId": 975,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000046",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000046"
+      }
+    },
+    {
+      "entryId": "20251129000047",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID892",
+      "uisp_payload": {
+        "clientId": 892,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000047",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000047"
+      }
+    },
+    {
+      "entryId": "20251129000048",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID614",
+      "uisp_payload": {
+        "clientId": 614,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000048",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000048"
+      }
+    },
+    {
+      "entryId": "20251129000049",
+      "amount": 1000.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID20",
+      "uisp_payload": {
+        "clientId": 20,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000049",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 1000.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000049"
+      }
+    },
+    {
+      "entryId": "20251129000050",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1107",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1107",
+      "uisp_payload": {
+        "clientId": 1107,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000050",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000050"
+      }
+    },
+    {
+      "entryId": "20251129000051",
+      "amount": 1379.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID863",
+      "remittance_info": "FNB APP PAYMENT FROM  CID863",
+      "uisp_payload": {
+        "clientId": 863,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251129000051",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 1379.0,
+        "userId": 1000,
+        "note": "TXN: 20251129000051"
+      }
+    },
+    {
+      "entryId": "20251201000002",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID359",
+      "remittance_info": "FNB APP PAYMENT FROM  CID359",
+      "uisp_payload": {
+        "clientId": 359,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000002",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000002"
+      }
+    },
+    {
+      "entryId": "20251201000003",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID387",
+      "remittance_info": "FNB APP PAYMENT FROM  CID387",
+      "uisp_payload": {
+        "clientId": 387,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000003",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000003"
+      }
+    },
+    {
+      "entryId": "20251201000004",
+      "amount": 400.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID227",
+      "remittance_info": "SCHEDULED PYMT FROM   CID227",
+      "uisp_payload": {
+        "clientId": 227,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000004",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 400.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000004"
+      }
+    },
+    {
+      "entryId": "20251201000005",
+      "amount": 96.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID192",
+      "remittance_info": "FNB APP PAYMENT FROM  CID192",
+      "uisp_payload": {
+        "clientId": 192,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000005",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 96.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000005"
+      }
+    },
+    {
+      "entryId": "20251201000015",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID 686",
+      "remittance_info": "FNB APP PAYMENT FROM  CID 686",
+      "uisp_payload": {
+        "clientId": 686,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000015",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000015"
+      }
+    },
+    {
+      "entryId": "20251201000022",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID692",
+      "remittance_info": "FNB APP PAYMENT FROM  CID692",
+      "uisp_payload": {
+        "clientId": 692,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000022",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000022"
+      }
+    },
+    {
+      "entryId": "20251201000023",
+      "amount": 63.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1098",
+      "remittance_info": "CID1098",
+      "uisp_payload": {
+        "clientId": 1098,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000023",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 63.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000023"
+      }
+    },
+    {
+      "entryId": "20251201000024",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID951",
+      "remittance_info": "FNB APP PAYMENT FROM  CID951",
+      "uisp_payload": {
+        "clientId": 951,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000024",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000024"
+      }
+    },
+    {
+      "entryId": "20251201000025",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1099",
+      "remittance_info": "FNB OB PMT            CID1099",
+      "uisp_payload": {
+        "clientId": 1099,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000025",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000025"
+      }
+    },
+    {
+      "entryId": "20251201000026",
+      "amount": 410.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID385",
+      "remittance_info": "FNB APP PAYMENT FROM  CID385",
+      "uisp_payload": {
+        "clientId": 385,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000026",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 410.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000026"
+      }
+    },
+    {
+      "entryId": "20251201000027",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1237",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1237",
+      "uisp_payload": {
+        "clientId": 1237,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000027",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000027"
+      }
+    },
+    {
+      "entryId": "20251201000028",
+      "amount": 483.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1262",
+      "remittance_info": "CID1262",
+      "uisp_payload": {
+        "clientId": 1262,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000028",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 483.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000028"
+      }
+    },
+    {
+      "entryId": "20251201000029",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID574",
+      "remittance_info": "FNB APP PAYMENT FROM  CID574",
+      "uisp_payload": {
+        "clientId": 574,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000029",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000029"
+      }
+    },
+    {
+      "entryId": "20251201000030",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID316",
+      "remittance_info": "FNB APP PAYMENT FROM  CID316",
+      "uisp_payload": {
+        "clientId": 316,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000030",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000030"
+      }
+    },
+    {
+      "entryId": "20251201000032",
+      "amount": 489.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1157",
+      "remittance_info": "CID1157",
+      "uisp_payload": {
+        "clientId": 1157,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000032",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 489.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000032"
+      }
+    },
+    {
+      "entryId": "20251201000033",
+      "amount": 819.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID659",
+      "remittance_info": "FNB APP PAYMENT FROM  CID659",
+      "uisp_payload": {
+        "clientId": 659,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000033",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 819.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000033"
+      }
+    },
+    {
+      "entryId": "20251201000034",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1146",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1146",
+      "uisp_payload": {
+        "clientId": 1146,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000034",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000034"
+      }
+    },
+    {
+      "entryId": "20251201000035",
+      "amount": 466.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID714",
+      "remittance_info": "CID714",
+      "uisp_payload": {
+        "clientId": 714,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000035",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 466.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000035"
+      }
+    },
+    {
+      "entryId": "20251201000036",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1238",
+      "remittance_info": "CID1238",
+      "uisp_payload": {
+        "clientId": 1238,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000036",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000036"
+      }
+    },
+    {
+      "entryId": "20251201000037",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID162",
+      "remittance_info": "FNB APP PAYMENT FROM  CID162",
+      "uisp_payload": {
+        "clientId": 162,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000037",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000037"
+      }
+    },
+    {
+      "entryId": "20251201000038",
+      "amount": 400.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID066",
+      "remittance_info": "CID066",
+      "uisp_payload": {
+        "clientId": 66,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000038",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 400.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000038"
+      }
+    },
+    {
+      "entryId": "20251201000039",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1131",
+      "remittance_info": "CID1131",
+      "uisp_payload": {
+        "clientId": 1131,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000039",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000039"
+      }
+    },
+    {
+      "entryId": "20251201000040",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1221",
+      "remittance_info": "CID1221",
+      "uisp_payload": {
+        "clientId": 1221,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000040",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000040"
+      }
+    },
+    {
+      "entryId": "20251201000041",
+      "amount": 3135.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID25 YASMEEN BHYAT",
+      "remittance_info": "FNB OB PMT            CID25 YASMEEN BHYAT",
+      "uisp_payload": {
+        "clientId": 25,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000041",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 3135.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000041"
+      }
+    },
+    {
+      "entryId": "20251201000042",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID989",
+      "remittance_info": "CID989",
+      "uisp_payload": {
+        "clientId": 989,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000042",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000042"
+      }
+    },
+    {
+      "entryId": "20251201000043",
+      "amount": 390.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "AFRIETA CID448",
+      "remittance_info": "FNB APP PAYMENT FROM  AFRIETA CID448",
+      "uisp_payload": {
+        "clientId": 448,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000043",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 390.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000043"
+      }
+    },
+    {
+      "entryId": "20251201000044",
+      "amount": 359.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID 672",
+      "remittance_info": "FNB APP PAYMENT FROM  CID 672",
+      "uisp_payload": {
+        "clientId": 672,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000044",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 359.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000044"
+      }
+    },
+    {
+      "entryId": "20251201000045",
+      "amount": 450.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1235",
+      "remittance_info": "ADT CASH DEPO00665003 CID1235",
+      "uisp_payload": {
+        "clientId": 1235,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000045",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 450.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000045"
+      }
+    },
+    {
+      "entryId": "20251201000046",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID939",
+      "remittance_info": "FNB APP PAYMENT FROM  CID939",
+      "uisp_payload": {
+        "clientId": 939,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000046",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000046"
+      }
+    },
+    {
+      "entryId": "20251201000047",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID309",
+      "remittance_info": "FNB APP PAYMENT FROM  CID309",
+      "uisp_payload": {
+        "clientId": 309,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000047",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000047"
+      }
+    },
+    {
+      "entryId": "20251201000048",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1149",
+      "remittance_info": "CID1149",
+      "uisp_payload": {
+        "clientId": 1149,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000048",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000048"
+      }
+    },
+    {
+      "entryId": "20251201000049",
+      "amount": 350.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID528",
+      "remittance_info": "FNB APP PAYMENT FROM  CID528",
+      "uisp_payload": {
+        "clientId": 528,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000049",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 350.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000049"
+      }
+    },
+    {
+      "entryId": "20251201000050",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID847",
+      "remittance_info": "FNB APP PAYMENT FROM  CID847",
+      "uisp_payload": {
+        "clientId": 847,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000050",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000050"
+      }
+    },
+    {
+      "entryId": "20251201000052",
+      "amount": 508.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID701",
+      "remittance_info": "FNB APP PAYMENT FROM  CID701",
+      "uisp_payload": {
+        "clientId": 701,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000052",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 508.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000052"
+      }
+    },
+    {
+      "entryId": "20251201000054",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID711",
+      "remittance_info": "FNB APP PAYMENT FROM  CID711",
+      "uisp_payload": {
+        "clientId": 711,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000054",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000054"
+      }
+    },
+    {
+      "entryId": "20251201000056",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "E MC LEODCID978",
+      "remittance_info": "E MC LEODCID978",
+      "uisp_payload": {
+        "clientId": 978,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000056",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000056"
+      }
+    },
+    {
+      "entryId": "20251201000057",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1053",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1053",
+      "uisp_payload": {
+        "clientId": 1053,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000057",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000057"
+      }
+    },
+    {
+      "entryId": "20251201000058",
+      "amount": 67.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID514",
+      "uisp_payload": {
+        "clientId": 514,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000058",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 67.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000058"
+      }
+    },
+    {
+      "entryId": "20251201000059",
+      "amount": 100.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID1271",
+      "uisp_payload": {
+        "clientId": 1271,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000059",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 100.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000059"
+      }
+    },
+    {
+      "entryId": "20251201000060",
+      "amount": 220.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "Cid1272",
+      "uisp_payload": {
+        "clientId": 1272,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000060",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 220.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000060"
+      }
+    },
+    {
+      "entryId": "20251201000061",
+      "amount": 333.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID1094",
+      "uisp_payload": {
+        "clientId": 1094,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000061",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 333.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000061"
+      }
+    },
+    {
+      "entryId": "20251201000062",
+      "amount": 360.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID323",
+      "uisp_payload": {
+        "clientId": 323,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000062",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 360.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000062"
+      }
+    },
+    {
+      "entryId": "20251201000063",
+      "amount": 400.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "ABSA BANK CID578",
+      "uisp_payload": {
+        "clientId": 578,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000063",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 400.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000063"
+      }
+    },
+    {
+      "entryId": "20251201000064",
+      "amount": 400.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID561",
+      "uisp_payload": {
+        "clientId": 561,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000064",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 400.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000064"
+      }
+    },
+    {
+      "entryId": "20251201000065",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "ABSA BANK CID631",
+      "uisp_payload": {
+        "clientId": 631,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000065",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000065"
+      }
+    },
+    {
+      "entryId": "20251201000066",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID454",
+      "uisp_payload": {
+        "clientId": 454,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000066",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000066"
+      }
+    },
+    {
+      "entryId": "20251201000067",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID349",
+      "uisp_payload": {
+        "clientId": 349,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000067",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000067"
+      }
+    },
+    {
+      "entryId": "20251201000068",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID624",
+      "uisp_payload": {
+        "clientId": 624,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000068",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000068"
+      }
+    },
+    {
+      "entryId": "20251201000069",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID347",
+      "uisp_payload": {
+        "clientId": 347,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000069",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000069"
+      }
+    },
+    {
+      "entryId": "20251201000070",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "INVESTECPBCID488",
+      "uisp_payload": {
+        "clientId": 488,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000070",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000070"
+      }
+    },
+    {
+      "entryId": "20251201000071",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID530",
+      "uisp_payload": {
+        "clientId": 530,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000071",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000071"
+      }
+    },
+    {
+      "entryId": "20251201000072",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID754",
+      "uisp_payload": {
+        "clientId": 754,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000072",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000072"
+      }
+    },
+    {
+      "entryId": "20251201000073",
+      "amount": 410.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID647",
+      "uisp_payload": {
+        "clientId": 647,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000073",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 410.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000073"
+      }
+    },
+    {
+      "entryId": "20251201000074",
+      "amount": 410.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID 308",
+      "uisp_payload": {
+        "clientId": 308,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000074",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 410.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000074"
+      }
+    },
+    {
+      "entryId": "20251201000075",
+      "amount": 432.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID1186",
+      "uisp_payload": {
+        "clientId": 1186,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000075",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 432.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000075"
+      }
+    },
+    {
+      "entryId": "20251201000076",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "ABSA BANK CID442",
+      "uisp_payload": {
+        "clientId": 442,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000076",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000076"
+      }
+    },
+    {
+      "entryId": "20251201000077",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID364",
+      "uisp_payload": {
+        "clientId": 364,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000077",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000077"
+      }
+    },
+    {
+      "entryId": "20251201000078",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID662",
+      "uisp_payload": {
+        "clientId": 662,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000078",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000078"
+      }
+    },
+    {
+      "entryId": "20251201000079",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID868 Z BHYAT",
+      "uisp_payload": {
+        "clientId": 868,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000079",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000079"
+      }
+    },
+    {
+      "entryId": "20251201000080",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID283",
+      "uisp_payload": {
+        "clientId": 283,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000080",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000080"
+      }
+    },
+    {
+      "entryId": "20251201000081",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID1112",
+      "uisp_payload": {
+        "clientId": 1112,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000081",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000081"
+      }
+    },
+    {
+      "entryId": "20251201000082",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID299",
+      "uisp_payload": {
+        "clientId": 299,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000082",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000082"
+      }
+    },
+    {
+      "entryId": "20251201000083",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID796",
+      "uisp_payload": {
+        "clientId": 796,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000083",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000083"
+      }
+    },
+    {
+      "entryId": "20251201000084",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID 397",
+      "uisp_payload": {
+        "clientId": 397,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000084",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000084"
+      }
+    },
+    {
+      "entryId": "20251201000085",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID1123",
+      "uisp_payload": {
+        "clientId": 1123,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000085",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000085"
+      }
+    },
+    {
+      "entryId": "20251201000086",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID1138",
+      "uisp_payload": {
+        "clientId": 1138,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000086",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000086"
+      }
+    },
+    {
+      "entryId": "20251201000087",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   E JANSEN CID446",
+      "uisp_payload": {
+        "clientId": 446,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000087",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000087"
+      }
+    },
+    {
+      "entryId": "20251201000088",
+      "amount": 450.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID829",
+      "uisp_payload": {
+        "clientId": 829,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000088",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 450.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000088"
+      }
+    },
+    {
+      "entryId": "20251201000089",
+      "amount": 450.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID596",
+      "uisp_payload": {
+        "clientId": 596,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000089",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 450.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000089"
+      }
+    },
+    {
+      "entryId": "20251201000090",
+      "amount": 455.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID1279",
+      "uisp_payload": {
+        "clientId": 1279,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000090",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 455.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000090"
+      }
+    },
+    {
+      "entryId": "20251201000091",
+      "amount": 489.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID1029",
+      "uisp_payload": {
+        "clientId": 1029,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000091",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 489.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000091"
+      }
+    },
+    {
+      "entryId": "20251201000092",
+      "amount": 489.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID1130",
+      "uisp_payload": {
+        "clientId": 1130,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000092",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 489.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000092"
+      }
+    },
+    {
+      "entryId": "20251201000093",
+      "amount": 489.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID1083",
+      "uisp_payload": {
+        "clientId": 1083,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000093",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 489.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000093"
+      }
+    },
+    {
+      "entryId": "20251201000094",
+      "amount": 491.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID790",
+      "uisp_payload": {
+        "clientId": 790,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000094",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 491.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000094"
+      }
+    },
+    {
+      "entryId": "20251201000095",
+      "amount": 500.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID164",
+      "uisp_payload": {
+        "clientId": 164,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000095",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 500.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000095"
+      }
+    },
+    {
+      "entryId": "20251201000096",
+      "amount": 500.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID1267",
+      "uisp_payload": {
+        "clientId": 1267,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000096",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 500.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000096"
+      }
+    },
+    {
+      "entryId": "20251201000097",
+      "amount": 530.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "ABSA BANK CID688",
+      "uisp_payload": {
+        "clientId": 688,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000097",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 530.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000097"
+      }
+    },
+    {
+      "entryId": "20251201000098",
+      "amount": 546.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID306",
+      "uisp_payload": {
+        "clientId": 306,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000098",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 546.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000098"
+      }
+    },
+    {
+      "entryId": "20251201000099",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID760",
+      "uisp_payload": {
+        "clientId": 760,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000099",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000099"
+      }
+    },
+    {
+      "entryId": "20251201000100",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID318",
+      "uisp_payload": {
+        "clientId": 318,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000100",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000100"
+      }
+    },
+    {
+      "entryId": "20251201000101",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID1132",
+      "uisp_payload": {
+        "clientId": 1132,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000101",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000101"
+      }
+    },
+    {
+      "entryId": "20251201000102",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID955",
+      "uisp_payload": {
+        "clientId": 955,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000102",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000102"
+      }
+    },
+    {
+      "entryId": "20251201000103",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID122",
+      "uisp_payload": {
+        "clientId": 122,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000103",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000103"
+      }
+    },
+    {
+      "entryId": "20251201000104",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "Cid247",
+      "uisp_payload": {
+        "clientId": 247,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000104",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000104"
+      }
+    },
+    {
+      "entryId": "20251201000105",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID1210",
+      "uisp_payload": {
+        "clientId": 1210,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000105",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000105"
+      }
+    },
+    {
+      "entryId": "20251201000106",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID1218",
+      "uisp_payload": {
+        "clientId": 1218,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000106",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000106"
+      }
+    },
+    {
+      "entryId": "20251201000107",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   A MAANS CID1074",
+      "uisp_payload": {
+        "clientId": 1074,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000107",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000107"
+      }
+    },
+    {
+      "entryId": "20251201000108",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID973",
+      "uisp_payload": {
+        "clientId": 973,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000108",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000108"
+      }
+    },
+    {
+      "entryId": "20251201000109",
+      "amount": 589.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID1186",
+      "uisp_payload": {
+        "clientId": 1186,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000109",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 589.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000109"
+      }
+    },
+    {
+      "entryId": "20251201000110",
+      "amount": 589.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID967",
+      "uisp_payload": {
+        "clientId": 967,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000110",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 589.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000110"
+      }
+    },
+    {
+      "entryId": "20251201000111",
+      "amount": 700.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID209",
+      "uisp_payload": {
+        "clientId": 209,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000111",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 700.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000111"
+      }
+    },
+    {
+      "entryId": "20251201000112",
+      "amount": 700.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID636",
+      "uisp_payload": {
+        "clientId": 636,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000112",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 700.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000112"
+      }
+    },
+    {
+      "entryId": "20251201000113",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "ABSA BANK CID581",
+      "uisp_payload": {
+        "clientId": 581,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000113",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000113"
+      }
+    },
+    {
+      "entryId": "20251201000114",
+      "amount": 819.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "ABSA BANK CID143",
+      "uisp_payload": {
+        "clientId": 143,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000114",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 819.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000114"
+      }
+    },
+    {
+      "entryId": "20251201000115",
+      "amount": 819.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "ABSA BANK CID336",
+      "uisp_payload": {
+        "clientId": 336,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000115",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 819.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000115"
+      }
+    },
+    {
+      "entryId": "20251201000116",
+      "amount": 875.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CAPITEC   CID1243",
+      "uisp_payload": {
+        "clientId": 1243,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000116",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 875.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000116"
+      }
+    },
+    {
+      "entryId": "20251201000117",
+      "amount": 1029.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "ABSA BANK CID638",
+      "uisp_payload": {
+        "clientId": 638,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000117",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 1029.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000117"
+      }
+    },
+    {
+      "entryId": "20251201000118",
+      "amount": 1045.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID42",
+      "uisp_payload": {
+        "clientId": 42,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000118",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 1045.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000118"
+      }
+    },
+    {
+      "entryId": "20251201000119",
+      "amount": 1500.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "CID - 077",
+      "uisp_payload": {
+        "clientId": 77,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000119",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 1500.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000119"
+      }
+    },
+    {
+      "entryId": "20251201000120",
+      "amount": 1980.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "",
+      "remittance_info": "ABSA BANK CID 135",
+      "uisp_payload": {
+        "clientId": 135,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000120",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 1980.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000120"
+      }
+    },
+    {
+      "entryId": "20251201000122",
+      "amount": 359.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID 338",
+      "remittance_info": "FNB APP PAYMENT FROM  CID 338",
+      "uisp_payload": {
+        "clientId": 338,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000122",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 359.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000122"
+      }
+    },
+    {
+      "entryId": "20251201000123",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID392",
+      "remittance_info": "FNB APP PAYMENT FROM  CID392",
+      "uisp_payload": {
+        "clientId": 392,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000123",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000123"
+      }
+    },
+    {
+      "entryId": "20251201000124",
+      "amount": 489.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1041",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1041",
+      "uisp_payload": {
+        "clientId": 1041,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000124",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 489.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000124"
+      }
+    },
+    {
+      "entryId": "20251201000125",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1001",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1001",
+      "uisp_payload": {
+        "clientId": 1001,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000125",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000125"
+      }
+    },
+    {
+      "entryId": "20251201000126",
+      "amount": 814.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID356",
+      "remittance_info": "FNB APP PAYMENT FROM  CID356",
+      "uisp_payload": {
+        "clientId": 356,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000126",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 814.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000126"
+      }
+    },
+    {
+      "entryId": "20251201000127",
+      "amount": 400.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID699",
+      "remittance_info": "CID699",
+      "uisp_payload": {
+        "clientId": 699,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251201000127",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 400.0,
+        "userId": 1000,
+        "note": "TXN: 20251201000127"
+      }
+    },
+    {
+      "entryId": "20251202000001",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID848",
+      "remittance_info": "FNB APP PAYMENT FROM  CID848",
+      "uisp_payload": {
+        "clientId": 848,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000001",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000001"
+      }
+    },
+    {
+      "entryId": "20251202000007",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID566",
+      "remittance_info": "SCHEDULED PYMT FROM   CID566",
+      "uisp_payload": {
+        "clientId": 566,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000007",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000007"
+      }
+    },
+    {
+      "entryId": "20251202000008",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID553",
+      "remittance_info": "FNB APP PAYMENT FROM  CID553",
+      "uisp_payload": {
+        "clientId": 553,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000008",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000008"
+      }
+    },
+    {
+      "entryId": "20251202000009",
+      "amount": 449.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID629",
+      "remittance_info": "FNB APP PAYMENT FROM  CID629",
+      "uisp_payload": {
+        "clientId": 629,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000009",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 449.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000009"
+      }
+    },
+    {
+      "entryId": "20251202000010",
+      "amount": 409.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID781",
+      "remittance_info": "CID781",
+      "uisp_payload": {
+        "clientId": 781,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000010",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 409.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000010"
+      }
+    },
+    {
+      "entryId": "20251202000011",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1128",
+      "remittance_info": "CID1128",
+      "uisp_payload": {
+        "clientId": 1128,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000011",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000011"
+      }
+    },
+    {
+      "entryId": "20251202000012",
+      "amount": 1330.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID098",
+      "remittance_info": "FNB APP PAYMENT FROM  CID098",
+      "uisp_payload": {
+        "clientId": 98,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000012",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 1330.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000012"
+      }
+    },
+    {
+      "entryId": "20251202000013",
+      "amount": 589.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID484",
+      "remittance_info": "FNB APP PAYMENT FROM  CID484",
+      "uisp_payload": {
+        "clientId": 484,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000013",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 589.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000013"
+      }
+    },
+    {
+      "entryId": "20251202000014",
+      "amount": 369.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1140",
+      "remittance_info": "FNB OB PMT            CID1140",
+      "uisp_payload": {
+        "clientId": 1140,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000014",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 369.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000014"
+      }
+    },
+    {
+      "entryId": "20251202000015",
+      "amount": 750.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID618",
+      "remittance_info": "FNB APP PAYMENT FROM  CID618",
+      "uisp_payload": {
+        "clientId": 618,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000015",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 750.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000015"
+      }
+    },
+    {
+      "entryId": "20251202000016",
+      "amount": 460.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1086",
+      "remittance_info": "FNB APP PAYMENT FROM  CID1086",
+      "uisp_payload": {
+        "clientId": 1086,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000016",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 460.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000016"
+      }
+    },
+    {
+      "entryId": "20251202000017",
+      "amount": 415.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "Cid599",
+      "remittance_info": "Cid599",
+      "uisp_payload": {
+        "clientId": 599,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000017",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 415.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000017"
+      }
+    },
+    {
+      "entryId": "20251202000018",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID922",
+      "remittance_info": "CID922",
+      "uisp_payload": {
+        "clientId": 922,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000018",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000018"
+      }
+    },
+    {
+      "entryId": "20251202000019",
+      "amount": 410.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID439",
+      "remittance_info": "FNB APP PAYMENT FROM  CID439",
+      "uisp_payload": {
+        "clientId": 439,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000019",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 410.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000019"
+      }
+    },
+    {
+      "entryId": "20251202000020",
+      "amount": 580.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID742",
+      "remittance_info": "FNB APP PAYMENT FROM  CID742",
+      "uisp_payload": {
+        "clientId": 742,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000020",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 580.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000020"
+      }
+    },
+    {
+      "entryId": "20251202000022",
+      "amount": 398.0,
+      "account": "REDACTED_ACCOUNT_2",
+      "reference": "CID1027",
+      "remittance_info": "CID1027",
+      "uisp_payload": {
+        "clientId": 1027,
+        "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+        "currencyCode": "ZAR",
+        "applyToInvoicesAutomatically": true,
+        "providerPaymentId": "20251202000022",
+        "providerPaymentTime": "2025-12-04T15:10:56+0000",
+        "providerName": "FNB-EFT",
+        "amount": 398.0,
+        "userId": 1000,
+        "note": "TXN: 20251202000022"
+      }
+    }
+  ]
+}

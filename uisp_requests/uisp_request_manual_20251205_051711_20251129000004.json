@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-12-05T05:17:11.495986+00:00",
+  "source": "manual_web_ui",
+  "entryId": "20251129000004",
+  "amount": 580.0,
+  "reference": "035 - DEEPAK",
+  "remittance_info": "FNB OB PMT            035 - DEEPAK",
+  "uisp_payload": {
+    "clientId": 35,
+    "methodId": "d8c1eae9-d41d-479f-aeaf-38497975d7b3",
+    "currencyCode": "ZAR",
+    "applyToInvoicesAutomatically": true,
+    "providerPaymentId": "20251129000004",
+    "providerPaymentTime": "2025-12-05T05:17:11+0000",
+    "providerName": "FNB-EFT",
+    "amount": 580.0,
+    "userId": 1000,
+    "note": "You have used an incorrect reference, please use CID35 in future to prevent your service from being suspended and EFT admin charges of R100. | TXN: 20251129000004"
+  }
+}
