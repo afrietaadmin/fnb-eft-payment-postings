@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Audit Log for {{ entry_id }}</h2>
+
+<p><a href="/transactions" class="btn btn-primary">← Back to Transactions</a></p>
+
+{% if logs %}
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Field</th>
+                <th>Old Value</th>
+                <th>New Value</th>
+                <th>Changed By</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td><strong>{{ log.action }}</strong></td>
+                <td>{{ log.field_name or '-' }}</td>
+                <td><code>{{ log.old_value or '-' }}</code></td>
+                <td><code>{{ log.new_value or '-' }}</code></td>
+                <td>{{ log.changed_by }}</td>
+                <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card">
+    <p>No audit log entries found for this transaction.</p>
+</div>
+{% endif %}
+{% endblock %}

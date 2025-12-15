@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Execution Logs</h2>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Script</th>
+                <th>Status</th>
+                <th>Processed</th>
+                <th>Failed</th>
+                <th>Amount (ZAR)</th>
+                <th>Message</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs.items %}
+            <tr>
+                <td><strong>{{ log.script_name }}</strong></td>
+                <td>
+                    {% if log.status == 'SUCCESS' %}
+                        <span class="badge badge-success">{{ log.status }}</span>
+                    {% else %}
+                        <span class="badge badge-danger">{{ log.status }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ log.transactions_processed }}</td>
+                <td>{{ log.transactions_failed }}</td>
+                <td>{{ "%.2f"|format(log.total_amount) }}</td>
+                <td><small>{{ log.message[:60] }}...</small></td>
+                <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="pagination">
+    {% if logs.has_prev %}
+        <a href="?page=1">« First</a>
+        <a href="?page={{ logs.prev_num }}">‹ Prev</a>
+    {% endif %}
+    {% for page_num in logs.iter_pages() %}
+        {% if page_num %}
+            {% if page_num == logs.page %}
+                <span class="active">{{ page_num }}</span>
+            {% else %}
+                <a href="?page={{ page_num }}">{{ page_num }}</a>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    {% if logs.has_next %}
+        <a href="?page={{ logs.next_num }}">Next ›</a>
+        <a href="?page={{ logs.pages }}">Last »</a>
+    {% endif %}
+</div>
+{% endblock %}

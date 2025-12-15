@@ -69,14 +69,8 @@
 <h2>Suspensions</h2>
 
 <div class="filter-buttons">
-    <a href="{{ url_for('suspension.list_suspensions', filter='all') }}" class="btn btn-secondary">
-        All Suspensions
-    </a>
     <a href="{{ url_for('suspension.list_suspensions', filter='active') }}" class="btn btn-secondary">
         Active Suspensions
-    </a>
-    <a href="{{ url_for('suspension.list_suspensions', filter='resolved') }}" class="btn btn-secondary">
-        Resolved Suspensions
     </a>
     <a href="{{ url_for('suspension.suspension_candidates') }}" class="btn btn-primary">
         Suspension Candidates
@@ -102,11 +96,9 @@
         <div class="candidate-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <div>
-                    <input type="checkbox" class="candidate-checkbox" value="{{ item.customer.id }}__{{ item.customer.services[0].id if item.customer.services else 0 }}" />
+                    <input type="checkbox" class="candidate-checkbox" value="{{ item.customer.id }}" />
                     <strong>
-                        <a href="{{ url_for('suspension.customer_suspension_details', customer_id=item.customer.id) }}">
-                            {{ item.customer.first_name }} {{ item.customer.last_name }}
-                        </a>
+                        {{ item.customer.first_name }} {{ item.customer.last_name }}
                     </strong>
                 </div>
                 <span class="reason">{{ item.reason }}</span>
@@ -132,10 +124,6 @@
                             Standard
                         {% endif %}
                     </div>
-                </div>
-                <div class="info-block">
-                    <div class="label">Active Services</div>
-                    <div class="value">{{ item.customer.services | length }}</div>
                 </div>
             </div>
 
@@ -164,11 +152,9 @@
 
             <div class="actions">
                 <button class="btn btn-small btn-danger"
-                        onclick="suspendService({{ item.customer.id }}, '{{ item.customer.services[0].id if item.customer.services else 0 }}', '{{ item.reason }}')">
+                        onclick="suspendService({{ item.customer.id }}, '{{ item.reason }}')">
                     Suspend Now
                 </button>
-                <a href="{{ url_for('suspension.customer_suspension_details', customer_id=item.customer.id) }}"
-                   class="btn btn-small btn-primary">View Details</a>
             </div>
         </div>
         {% endfor %}
@@ -205,7 +191,7 @@ function toggleSelectAll() {
     });
 }
 
-function suspendService(customerId, serviceId, reason) {
+function suspendService(customerId, reason) {
     if (!confirm(`Suspend service for this customer?\n\nReason: ${reason}`)) {
         return;
     }
@@ -219,7 +205,6 @@ function suspendService(customerId, serviceId, reason) {
         },
         body: JSON.stringify({
             customer_id: customerId,
-            service_id: serviceId,
             reason: reason,
             note: note || ''
         })
@@ -242,19 +227,17 @@ function suspendService(customerId, serviceId, reason) {
 function bulkSuspend() {
     const selected = document.querySelectorAll('.candidate-checkbox:checked');
     if (selected.length === 0) {
-        alert('Please select at least one service to suspend');
+        alert('Please select at least one customer to suspend');
         return;
     }
 
-    if (!confirm(`Suspend ${selected.length} services?`)) {
+    if (!confirm(`Suspend ${selected.length} customers?`)) {
         return;
     }
 
     const suspensions = Array.from(selected).map(checkbox => {
-        const [customerId, serviceId] = checkbox.value.split('__');
         return {
-            customer_id: parseInt(customerId),
-            service_id: parseInt(serviceId),
+            customer_id: parseInt(checkbox.value),
             reason: 'Bulk suspension - Non-payment'
         };
     });

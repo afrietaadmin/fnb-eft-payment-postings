@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Suspensions{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Suspensions</h1>
+        <p class="page-subtitle">Active and resolved service suspensions</p>
+    </div>
+</div>
+
+<div class="page-actions mb-lg">
+    <a href="{{ url_for('suspension.list_suspensions', filter='active') }}"
+       class="btn {% if filter_type == 'active' %}btn-primary{% else %}btn-secondary{% endif %}">
+        Active Suspensions
+    </a>
+    <a href="{{ url_for('suspension.suspension_candidates') }}" class="btn btn-warning">
+        Suspension Candidates
+    </a>
+</div>
+
+<div class="content-section">
+    {% if suspensions.items %}
+        {% for suspension in suspensions.items %}
+        <div class="card mb-md" style="border-left: 4px solid {% if suspension.is_active %}var(--color-danger){% else %}var(--color-success){% endif %}; background: {% if suspension.is_active %}rgba(231, 76, 60, 0.03){% else %}rgba(39, 174, 96, 0.03){% endif %};">
+            <div class="card-body">
+                <div class="grid grid-cols-3 mb-lg">
+                    <div>
+                        <div style="font-weight: var(--font-weight-bold); color: var(--color-text); font-size: var(--font-size-xs); text-transform: uppercase; margin-bottom: 4px;">Customer</div>
+                        <a href="{{ url_for('suspension.customer_suspension_details', customer_id=suspension.customer.id) if suspension.customer.id else '#' }}" style="color: var(--color-primary);">
+                            {{ suspension.customer.first_name }} {{ suspension.customer.last_name }}<br>
+                            <span class="badge badge-primary">CID: {{ suspension.customer.uisp_client_id }}</span>
+                        </a>
+                    </div>
+                    <div>
+                        <div style="font-weight: var(--font-weight-bold); color: var(--color-text); font-size: var(--font-size-xs); text-transform: uppercase; margin-bottom: 4px;">Service</div>
+                        <div>{{ suspension.uisp_service_id }}</div>
+                        {% if suspension.uisp_service_name %}
+                            <small style="color: var(--color-text-secondary);">{{ suspension.uisp_service_name }}</small>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div style="font-weight: var(--font-weight-bold); color: var(--color-text); font-size: var(--font-size-xs); text-transform: uppercase; margin-bottom: 4px;">Suspension Date</div>
+                        <div>
+                            {% if suspension.suspension_date %}
+                                {{ suspension.suspension_date.strftime('%Y-%m-%d %H:%M') }}
+                            {% else %}
+                                <small style="color: var(--color-text-secondary);">From UISP</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if not suspension.is_active %}
+                <div class="grid grid-cols-3 mb-lg">
+                    <div>
+                        <div style="font-weight: var(--font-weight-bold); color: var(--color-text); font-size: var(--font-size-xs); text-transform: uppercase; margin-bottom: 4px;">Reactivation Date</div>
+                        <div>{{ suspension.reactivation_date.strftime('%Y-%m-%d %H:%M') if suspension.reactivation_date else 'N/A' }}</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: var(--font-weight-bold); color: var(--color-text); font-size: var(--font-size-xs); text-transform: uppercase; margin-bottom: 4px;">Reactivated By</div>
+                        <div>{{ suspension.reactivated_by or 'N/A' }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Suspension History -->
+                <div class="alert alert-info alert-border-left mb-lg">
+                    <div class="alert-icon">📋</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Previous Suspensions: {{ suspension.suspension_count if suspension.suspension_count else 0 }}</div>
+                        <div class="alert-message">
+                            {% if suspension.latest_suspension_date %}
+                                Latest: {{ suspension.latest_suspension_date.strftime('%Y-%m-%d') }} ({{ suspension.suspension_days if suspension.suspension_days else 0 }} days ago)
+                            {% else %}
+                                No previous suspension history
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Closure Alert -->
+                {% if suspension.suspension_days and suspension.suspension_days > 15 %}
+                <div class="alert alert-danger alert-border-left">
+                    <div class="alert-icon">⚠</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Closure Alert</div>
+                        <div class="alert-message">Account suspended for {{ suspension.suspension_days }} days. Equipment retrieval may be required.</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Pagination -->
+        {% if suspensions.pages > 1 %}
+        <div style="margin-top: 30px; text-align: center;">
+            {% if suspensions.has_prev %}
+                <a href="{{ url_for('suspension.list_suspensions', page=suspensions.prev_num, filter=filter_type) }}" class="btn btn-secondary">← Previous</a>
+            {% endif %}
+
+            <span style="margin: 0 10px;">
+                Page {{ suspensions.page }} of {{ suspensions.pages }}
+            </span>
+
+            {% if suspensions.has_next %}
+                <a href="{{ url_for('suspension.list_suspensions', page=suspensions.next_num, filter=filter_type) }}" class="btn btn-secondary">Next →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="card">
+            <div class="card-body" style="text-align: center; padding: var(--spacing-2xl);">
+                <p style="color: var(--color-text-secondary);">No suspensions found</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function reactivateService(suspensionId) {
+    if (!confirm('Are you sure you want to reactivate this service?')) {
+        return;
+    }
+
+    fetch('{{ url_for("suspension.api_reactivate_service") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            suspension_id: suspensionId,
+            note: prompt('Enter reactivation note (optional):') || ''
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Service reactivated successfully');
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to reactivate service');
+    });
+}
+</script>
+{% endblock %}

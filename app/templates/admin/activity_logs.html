@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h2>User Activity Logs</h2>
+        <p style="color: #666; margin-top: 5px;">View and filter user actions in the system</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="card">
+        <h3>Filter Logs</h3>
+        <form method="GET" action="{{ url_for('auth.activity_logs_page') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="user_filter">Filter by User</label>
+                <select id="user_filter" name="user">
+                    <option value="">All Users</option>
+                    {% for user in users %}
+                    <option value="{{ user.username }}" {% if user_filter == user.username %}selected{% endif %}>
+                        {{ user.username }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="action_filter">Filter by Action</label>
+                <select id="action_filter" name="action">
+                    <option value="">All Actions</option>
+                    {% for action in action_types %}
+                    <option value="{{ action }}" {% if action_filter == action %}selected{% endif %}>
+                        {{ action.upper().replace('_', ' ') }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; align-items: flex-end; gap: 10px;">
+                <button type="submit" class="btn btn-primary" style="margin-bottom: 0; flex: 1;">Apply Filters</button>
+                <a href="{{ url_for('auth.activity_logs_page') }}" class="btn" style="background: #95a5a6; color: white; text-decoration: none; text-align: center; margin-bottom: 0; flex: 1;">Clear</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Activity Logs Table -->
+    <div class="card">
+        <h3>Activity History</h3>
+        {% if logs.items %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Description</th>
+                    <th>IP Address</th>
+                    <th>Endpoint</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs.items %}
+                <tr>
+                    <td style="font-size: 13px;">
+                        <strong>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</strong>
+                    </td>
+                    <td>
+                        <strong>{{ log.username }}</strong>
+                    </td>
+                    <td>
+                        <span class="badge" style="background: #d1ecf1; color: #0c5460;">
+                            {{ log.action_type.upper().replace('_', ' ') }}
+                        </span>
+                    </td>
+                    <td style="font-size: 13px;">
+                        {{ log.action_description or '-' }}
+                    </td>
+                    <td style="font-size: 13px;">
+                        {{ log.ip_address or '-' }}
+                    </td>
+                    <td style="font-size: 13px;">
+                        {{ log.endpoint or '-' }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if logs.pages > 1 %}
+        <div class="pagination" style="margin-top: 20px;">
+            {% if logs.has_prev %}
+                <a href="{{ url_for('auth.activity_logs_page', page=logs.prev_num, user=user_filter, action=action_filter) }}">← Previous</a>
+            {% endif %}
+
+            {% for page_num in logs.iter_pages(left_edge=1, left_margin=1, right_margin=1, right_edge=1) %}
+                {% if page_num %}
+                    {% if page_num == logs.page %}
+                        <span style="background: #3498db; color: white; border-color: #3498db;">{{ page_num }}</span>
+                    {% else %}
+                        <a href="{{ url_for('auth.activity_logs_page', page=page_num, user=user_filter, action=action_filter) }}">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                    <span>...</span>
+                {% endif %}
+            {% endfor %}
+
+            {% if logs.has_next %}
+                <a href="{{ url_for('auth.activity_logs_page', page=logs.next_num, user=user_filter, action=action_filter) }}">Next →</a>
+            {% endif %}
+        </div>
+
+        <p style="margin-top: 15px; color: #666; font-size: 13px;">
+            Showing page {{ logs.page }} of {{ logs.pages }} ({{ logs.total }} total entries)
+        </p>
+        {% endif %}
+
+        {% else %}
+        <div style="padding: 30px; text-align: center; color: #666;">
+            <p>No activity logs found matching the selected filters.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Information -->
+    <div class="card" style="background: #f0f7ff; border-left: 3px solid #3498db;">
+        <h3>📊 Activity Log Information</h3>
+        <ul style="margin-left: 20px; color: #333;">
+            <li><strong>Timestamp:</strong> When the action occurred</li>
+            <li><strong>User:</strong> Which user performed the action</li>
+            <li><strong>Action:</strong> Type of action (login, logout, etc.)</li>
+            <li><strong>Description:</strong> Additional details about the action</li>
+            <li><strong>IP Address:</strong> Source IP address of the request</li>
+            <li><strong>Endpoint:</strong> Application endpoint that was accessed</li>
+        </ul>
+    </div>
+
+    <!-- Legend -->
+    <div class="card" style="background: #f9f9f9;">
+        <h3>Action Types</h3>
+        <ul style="margin-left: 20px; color: #333;">
+            <li><strong>login_success:</strong> Successful user login</li>
+            <li><strong>login_attempt_failed:</strong> Failed login attempt</li>
+            <li><strong>logout:</strong> User logout</li>
+            <li><strong>password_changed:</strong> User changed their password</li>
+            <li><strong>user_created:</strong> Admin created new user</li>
+            <li><strong>user_password_reset:</strong> Admin reset user password</li>
+            <li><strong>user_toggled:</strong> Admin activated/deactivated user</li>
+            <li><strong>user_role_changed:</strong> Admin changed user role</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    h2 { color: #2c3e50; margin-bottom: 10px; font-size: 28px; }
+    h3 { color: #2c3e50; margin-bottom: 15px; font-size: 18px; }
+    select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+    table td { vertical-align: top; }
+</style>
+{% endblock %}

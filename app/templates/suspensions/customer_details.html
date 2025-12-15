@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+{% block title %}Customer Suspension Details{% endblock %}
+{% block content %}
+<style>
+    .customer-header {
+        background-color: #34495e;
+        color: white;
+        padding: 20px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    .customer-header h2 {
+        margin: 0 0 10px 0;
+        color: white;
+    }
+    .header-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+        gap: 20px;
+        margin-top: 15px;
+    }
+    .header-item {
+        border-right: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .header-item:last-child {
+        border-right: none;
+    }
+    .header-label {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+    .header-value {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 5px;
+    }
+    .section {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .section h3 {
+        margin-top: 0;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+    }
+    .warning {
+        background-color: #fff3cd;
+        border: 1px solid #ffc107;
+        color: #856404;
+        padding: 12px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    .success {
+        background-color: #d4edda;
+        border: 1px solid #28a745;
+        color: #155724;
+        padding: 12px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    .danger {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+        padding: 12px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    .invoice-table th, .invoice-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    .invoice-table th {
+        background-color: #ecf0f1;
+        font-weight: bold;
+    }
+    .invoice-table tr:hover {
+        background-color: #f5f5f5;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .status-paid {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .status-unpaid {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    .status-overdue {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    .action-buttons {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+    }
+    .btn-large {
+        padding: 10px 20px;
+    }
+</style>
+
+<div class="customer-header">
+    <h2>{{ customer.first_name }} {{ customer.last_name }}</h2>
+    <div class="header-info">
+        <div class="header-item">
+            <div class="header-label">Customer ID</div>
+            <div class="header-value">{{ customer.uisp_client_id }}</div>
+        </div>
+        <div class="header-item">
+            <div class="header-label">Outstanding Balance</div>
+            <div class="header-value" style="color: {% if customer.account_outstanding > 0 %}#f39c12{% else %}#27ae60{% endif %};">
+                R {{ customer.account_outstanding | round(2) }}
+            </div>
+        </div>
+        <div class="header-item">
+            <div class="header-label">Account Status</div>
+            <div class="header-value" style="color: {% if customer.is_active %}#27ae60{% else %}#e74c3c{% endif %};">
+                {% if customer.is_active %}ACTIVE{% else %}INACTIVE{% endif %}
+            </div>
+        </div>
+        <div class="header-item">
+            <div class="header-label">Service Status</div>
+            <div class="header-value" style="color: {% if services and services[0].status == 'suspended' %}#e74c3c{% else %}#27ae60{% endif %};">
+                {% if services and services[0].status == 'suspended' %}SUSPENDED{% elif services %}ACTIVE{% else %}NO SERVICES{% endif %}
+            </div>
+        </div>
+        <div class="header-item">
+            <div class="header-label">VIP</div>
+            <div class="header-value" style="color: {% if customer.is_vip %}#9b59b6{% else %}#95a5a6{% endif %};">
+                {% if customer.is_vip %}YES{% else %}NO{% endif %}
+            </div>
+        </div>
+        <div class="header-item">
+            <div class="header-label">Grace Payment Date</div>
+            <div class="header-value" style="color: {% if customer.grace_payment_date %}#3498db{% else %}#95a5a6{% endif %};">
+                {% if customer.grace_payment_date %}{{ customer.grace_payment_date }}th{% else %}N/A{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Suspension Status -->
+{% if should_suspend %}
+<div class="danger">
+    <strong>⚠️ Customer meets suspension criteria</strong><br>
+    Reason: {{ suspension_reason }}
+</div>
+{% else %}
+<div class="success">
+    <strong>✓ Customer does not meet suspension criteria</strong><br>
+    {% if customer.is_vip %}VIP status prevents suspension{% elif customer.grace_payment_date %}Within grace period (due by {{ customer.grace_payment_date }}th){% else %}Account is in good standing{% endif %}
+</div>
+{% endif %}
+
+<!-- Active Suspensions -->
+{% if suspensions %}
+<div class="section">
+    <h3>Suspension History</h3>
+    {% for suspension in suspensions %}
+    <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 3px;
+                {% if suspension.is_active %}background-color: #fadbd8;{% else %}background-color: #d5f4e6;{% endif %}">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <strong>Service ID: {{ suspension.uisp_service_id }}</strong><br>
+                <span style="font-size: 12px; color: #555;">
+                    {{ suspension.suspension_date.strftime('%Y-%m-%d %H:%M') }} by {{ suspension.suspended_by }}
+                </span><br>
+                <span style="font-size: 12px; color: #555;">
+                    Reason: {{ suspension.suspension_reason }}
+                </span>
+            </div>
+            <div>
+                {% if suspension.is_active %}
+                    <span class="status-badge" style="background-color: #e74c3c; color: white;">ACTIVE</span>
+                    <button class="btn btn-small btn-success" onclick="reactivateService({{ suspension.id }})"
+                            style="margin-left: 10px;">Reactivate</button>
+                {% else %}
+                    <span class="status-badge" style="background-color: #27ae60; color: white;">RESOLVED</span><br>
+                    <span style="font-size: 11px; color: #555; margin-top: 5px; display: block;">
+                        {{ suspension.reactivation_date.strftime('%Y-%m-%d %H:%M') if suspension.reactivation_date else 'N/A' }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Services -->
+<div class="section">
+    <h3>Services ({{ services | length }})</h3>
+    {% if services %}
+    <table class="invoice-table">
+        <thead>
+            <tr>
+                <th>Service ID</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Billing Amount</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for service in services %}
+            <tr>
+                <td>{{ service.uisp_service_id }}</td>
+                <td>{{ service.service_name or 'N/A' }}</td>
+                <td>
+                    <span class="status-badge"
+                          style="background-color: {% if service.status == 'active' %}#d4edda; color: #155724;{% else %}#f8d7da; color: #721c24;{% endif %}">
+                        {{ service.status | upper }}
+                    </span>
+                </td>
+                <td>{% if service.billing_amount %}R {{ service.billing_amount | round(2) }}{% else %}N/A{% endif %}</td>
+                <td>
+                    {% if service.status == 'active' and should_suspend %}
+                    <button class="btn btn-small btn-danger"
+                            onclick="suspendService({{ customer.id }}, {{ service.id }}, 'Non-payment')">
+                        Suspend
+                    </button>
+                    {% elif service.status == 'suspended' %}
+                    <span style="color: #e74c3c; font-weight: bold;">Suspended</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #7f8c8d;">No active services</p>
+    {% endif %}
+</div>
+
+<!-- Payment Pattern Analysis -->
+{% if pattern %}
+<div class="section">
+    <h3>Payment Pattern Analysis</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+        <div>
+            <strong>On-Time Payments:</strong>
+            <div style="color: #27ae60; font-size: 24px; font-weight: bold;">{{ pattern.on_time_payment_count }}</div>
+        </div>
+        <div>
+            <strong>Late Payments:</strong>
+            <div style="color: #f39c12; font-size: 24px; font-weight: bold;">{{ pattern.late_payment_count }}</div>
+        </div>
+        <div>
+            <strong>Missed Payments:</strong>
+            <div style="color: #e74c3c; font-size: 24px; font-weight: bold;">{{ pattern.missed_payment_count }}</div>
+        </div>
+    </div>
+    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+        <strong>Average Days Late:</strong> {{ pattern.avg_days_late | round(1) if pattern.avg_days_late else 'N/A' }} days<br>
+        <strong>Average Payment Amount:</strong> R {{ pattern.avg_payment_amount | round(2) if pattern.avg_payment_amount else 'N/A' }}<br>
+        <strong>Risk Level:</strong>
+        <span style="color: {% if pattern.is_risky %}#e74c3c{% else %}#27ae60{% endif %}; font-weight: bold;">
+            {% if pattern.is_risky %}HIGH RISK{% else %}LOW RISK{% endif %}
+        </span><br>
+        <strong>Last Payment:</strong> {{ pattern.last_payment_date.strftime('%Y-%m-%d') if pattern.last_payment_date else 'N/A' }}
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Invoices -->
+<div class="section">
+    <h3>Recent Invoices (Last 10)</h3>
+    {% if invoices %}
+    <table class="invoice-table">
+        <thead>
+            <tr>
+                <th>Invoice #</th>
+                <th>Created</th>
+                <th>Due Date</th>
+                <th>Total</th>
+                <th>Remaining</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+            <tr>
+                <td>{{ invoice.invoice_number or 'N/A' }}</td>
+                <td>{{ invoice.created_date.strftime('%Y-%m-%d') if invoice.created_date else 'N/A' }}</td>
+                <td>
+                    {% if invoice.due_date %}
+                        {{ invoice.due_date.strftime('%Y-%m-%d') }}
+                        {% if invoice.due_date < now and invoice.status != 'paid' %}<strong style="color: #e74c3c;">(OVERDUE)</strong>{% endif %}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>R {{ invoice.total_amount | round(2) }}</td>
+                <td>R {{ invoice.remaining_amount | round(2) }}</td>
+                <td>
+                    <span class="status-badge {% if invoice.status == 'paid' %}status-paid{% else %}status-unpaid{% endif %}">
+                        {{ invoice.status | upper }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #7f8c8d;">No invoices found</p>
+    {% endif %}
+</div>
+
+<!-- Actions -->
+<div class="action-buttons">
+    <a href="{{ url_for('suspension.suspension_candidates') }}" class="btn btn-large btn-secondary">
+        Back to Candidates
+    </a>
+</div>
+
+<script>
+function suspendService(customerId, serviceId, reason) {
+    const note = prompt('Enter suspension note (optional):');
+
+    fetch('{{ url_for("suspension.api_suspend_service") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            customer_id: customerId,
+            service_id: serviceId,
+            reason: reason,
+            note: note || ''
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Service suspended successfully');
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to suspend service');
+    });
+}
+
+function reactivateService(suspensionId) {
+    if (!confirm('Are you sure you want to reactivate this service?')) {
+        return;
+    }
+
+    const note = prompt('Enter reactivation note (optional):');
+
+    fetch('{{ url_for("suspension.api_reactivate_service") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            suspension_id: suspensionId,
+            note: note || ''
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Service reactivated successfully');
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to reactivate service');
+    });
+}
+
+</script>
+{% endblock %}

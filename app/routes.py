@@ -575,6 +575,83 @@ def transaction_history():
                          total_count=total_count,
                          cutoff_date=cutoff_date)
 
+@main_bp.route('/quotes', methods=['GET'])
+@login_required
+def quotes():
+    """Display open quotes from UISP with customer details."""
+    from app.uisp_suspension_handler import UISPSuspensionHandler
+
+    handler = UISPSuspensionHandler()
+
+    try:
+        # Fetch open quotes (status=0)
+        quotes_response = handler._make_request('GET', 'v1.0/quotes', params={'statuses[]': '0'})
+
+        # Handle both list and dict responses
+        if isinstance(quotes_response, dict) and 'data' in quotes_response:
+            quotes_list = quotes_response['data']
+        elif isinstance(quotes_response, list):
+            quotes_list = quotes_response
+        else:
+            quotes_list = []
+
+        # Fetch all clients to match with quotes
+        clients_response = handler._make_request('GET', 'v1.0/clients')
+
+        if isinstance(clients_response, dict) and 'data' in clients_response:
+            clients_list = clients_response['data']
+        elif isinstance(clients_response, list):
+            clients_list = clients_response
+        else:
+            clients_list = []
+
+        # Create a map of client IDs to client data (exclude archived)
+        client_map = {}
+        for client in clients_list:
+            if not client.get('isArchived', False):
+                client_map[client.get('id')] = client
+
+        # Enrich quotes with client data
+        enriched_quotes = []
+        for quote in quotes_list:
+            client_id = quote.get('clientId')
+            client = client_map.get(client_id)
+
+            # Only include quotes from non-archived customers
+            if client:
+                enriched_quotes.append({
+                    'quote': quote,
+                    'client': client,
+                    'quote_id': quote.get('id'),
+                    'quote_number': quote.get('number'),
+                    'service_id': quote.get('serviceId'),
+                    'price': quote.get('price'),
+                    'total': quote.get('total'),
+                    'discount_value': quote.get('discountValue'),
+                    'currency_code': quote.get('currencyCode'),
+                    'valid_until': quote.get('validUntil'),
+                    'created_date': quote.get('createdDate'),
+                    'cid': client.get('id'),
+                    'full_name': client.get('fullName'),
+                    'email': client.get('email'),
+                    'phone': client.get('phone'),
+                })
+
+        # Sort by created date (newest first)
+        enriched_quotes.sort(
+            key=lambda x: x['created_date'] or '0000-00-00',
+            reverse=True
+        )
+
+        logger.info(f"Fetched {len(enriched_quotes)} open quotes for non-archived customers")
+
+        return render_template('quotes.html', quotes=enriched_quotes)
+
+    except Exception as e:
+        logger.error(f"Error fetching quotes: {str(e)}")
+        return render_template('quotes.html', quotes=[], error=str(e))
+
+
 @main_bp.route('/api/health', methods=['GET'])
 def health():
     return jsonify({'status': 'ok'})

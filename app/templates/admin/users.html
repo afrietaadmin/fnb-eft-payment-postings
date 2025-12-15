@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h2>User Management</h2>
+        <p style="color: #666; margin-top: 5px;">Manage system users and permissions</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="padding: 12px; border-radius: 4px; margin-bottom: 20px; background: {% if category == 'error' %}#f8d7da{% elif category == 'warning' %}#fff3cd{% else %}#d4edda{% endif %}; color: {% if category == 'error' %}#721c24{% elif category == 'warning' %}#856404{% else %}#155724{% endif %};">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Create New User Section -->
+    <div class="card">
+        <h3>Create New User</h3>
+        <form method="POST" action="{{ url_for('auth.create_user') }}" style="max-width: 500px;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="full_name" placeholder="Enter full name (optional)">
+            </div>
+
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select id="role" name="role" required>
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create User</button>
+        </form>
+    </div>
+
+    <!-- Users List -->
+    <div class="card">
+        <h3>System Users</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Last Login</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if users %}
+                    {% for user in users %}
+                    <tr>
+                        <td><strong>{{ user.username }}</strong></td>
+                        <td>{{ user.full_name or '-' }}</td>
+                        <td>
+                            <span class="badge" style="{% if user.role == 'admin' %}background: #d1ecf1; color: #0c5460;{% else %}background: #e2e3e5; color: #383d41;{% endif %}">
+                                {{ user.role.upper() }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                                <span class="badge badge-success">Active</span>
+                            {% else %}
+                                <span class="badge badge-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.last_login %}
+                                {{ user.last_login.strftime('%Y-%m-%d %H:%M') }}
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button
+                                    type="submit"
+                                    formaction="{{ url_for('auth.reset_password', user_id=user.id) }}"
+                                    class="btn"
+                                    style="padding: 6px 12px; font-size: 12px; background: #17a2b8; color: white; border-radius: 3px; cursor: pointer; margin-right: 5px;"
+                                    onclick="return confirm('Reset password for {{ user.username }}?')"
+                                >
+                                    Reset Password
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    formaction="{{ url_for('auth.toggle_active', user_id=user.id) }}"
+                                    class="btn"
+                                    style="padding: 6px 12px; font-size: 12px; background: {% if user.is_active %}#e74c3c{% else %}#27ae60{% endif %}; color: white; border-radius: 3px; cursor: pointer; margin-right: 5px;"
+                                    onclick="return confirm('{{ 'Deactivate' if user.is_active else 'Activate' }} user {{ user.username }}?')"
+                                >
+                                    {{ 'Deactivate' if user.is_active else 'Activate' }}
+                                </button>
+                            </form>
+
+                            {% if user.role != 'admin' %}
+                            <form method="POST" action="{{ url_for('auth.assign_role', user_id=user.id) }}" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <input type="hidden" name="role" value="admin">
+                                <button
+                                    type="submit"
+                                    class="btn"
+                                    style="padding: 6px 12px; font-size: 12px; background: #f39c12; color: white; border-radius: 3px; cursor: pointer;"
+                                    onclick="return confirm('Make {{ user.username }} an admin?')"
+                                >
+                                    Make Admin
+                                </button>
+                            </form>
+                            {% else %}
+                            <form method="POST" action="{{ url_for('auth.assign_role', user_id=user.id) }}" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <input type="hidden" name="role" value="user">
+                                <button
+                                    type="submit"
+                                    class="btn"
+                                    style="padding: 6px 12px; font-size: 12px; background: #95a5a6; color: white; border-radius: 3px; cursor: pointer;"
+                                    onclick="return confirm('Remove admin role from {{ user.username }}?')"
+                                >
+                                    Remove Admin
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: #666;">No users found</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Information -->
+    <div class="card" style="background: #f0f7ff; border-left: 3px solid #3498db;">
+        <h3>ℹ️ User Management Notes</h3>
+        <ul style="margin-left: 20px; color: #333;">
+            <li>New users are created with a temporary password and must change it on first login</li>
+            <li>Admins can manage users, view activity logs, and reset passwords</li>
+            <li>At least one active admin must always exist in the system</li>
+            <li>Inactive users cannot log in</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    h2 { color: #2c3e50; margin-bottom: 10px; font-size: 28px; }
+    h3 { color: #2c3e50; margin-bottom: 15px; font-size: 18px; }
+    select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+</style>
+{% endblock %}

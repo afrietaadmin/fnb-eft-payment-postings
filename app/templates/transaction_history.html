@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Transaction History</h1>
+        <p class="page-subtitle">Last 45 days from FNB API</p>
+    </div>
+</div>
+
+<!-- Summary Card -->
+<div class="card mb-lg">
+    <div class="card-body">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0;">Summary</h3>
+                <p style="margin: 5px 0; color: var(--color-text-secondary);">From {{ cutoff_date.strftime('%Y-%m-%d') }} to today</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 28px; font-weight: bold; color: var(--color-success);">ZAR {{ "%.2f"|format(total_amount) }}</div>
+                <div style="color: var(--color-text-secondary); margin-top: 5px;">{{ total_count }} transactions</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Buttons -->
+<div class="page-actions mb-lg">
+    <a href="?status=all{% if search %}&search={{ search }}{% endif %}" class="btn {% if status == 'all' %}btn-primary{% else %}btn-secondary{% endif %}">All</a>
+    <a href="?status=yes{% if search %}&search={{ search }}{% endif %}" class="btn {% if status == 'yes' %}btn-success{% else %}btn-secondary{% endif %}">Posted</a>
+    <a href="?status=no{% if search %}&search={{ search }}{% endif %}" class="btn {% if status == 'no' %}btn-warning{% else %}btn-secondary{% endif %}">Pending</a>
+</div>
+
+<!-- Search Card -->
+<div class="card mb-lg">
+    <div class="card-body">
+        <form method="GET" action="/transaction-history" class="form-inline">
+            <input type="hidden" name="status" value="{{ status }}">
+            <input type="text" name="search" value="{{ search }}" placeholder="Search by Entry ID, CID, Reference, Account..." class="form-control" style="flex: 1; margin-right: var(--spacing-sm);">
+            <button type="submit" class="btn btn-primary">Search</button>
+            {% if search %}
+            <a href="/transaction-history?status={{ status }}" class="btn btn-secondary" style="margin-left: var(--spacing-sm);">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Transactions Table -->
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Entry ID</th>
+                <th>Amount</th>
+                <th>Account</th>
+                <th>CID</th>
+                <th>Reference</th>
+                <th>Remittance Info</th>
+                <th>Status</th>
+                <th style="width: 100px;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if transactions.items %}
+                {% for txn in transactions.items %}
+                <tr>
+                    <td>{{ txn.timestamp.strftime('%Y-%m-%d %H:%M') if txn.timestamp else '-' }}</td>
+                    <td><code>{{ txn.entryId }}</code></td>
+                    <td><strong style="color: var(--color-success);">ZAR {{ "%.2f"|format(txn.amount) }}</strong></td>
+                    <td><code>{{ txn.account }}</code></td>
+                    <td>
+                        {% if txn.CID == 'unallocated' %}
+                            <span class="badge badge-danger">{{ txn.CID }}</span>
+                        {% else %}
+                            <span class="badge badge-success">{{ txn.CID }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ txn.reference or '-' }}</td>
+                    <td title="{{ txn.remittance_info or '-' }}">{{ txn.remittance_info or '-' }}</td>
+                    <td>
+                        {% if txn.posted == 'yes' %}
+                            <span class="badge badge-success">Posted</span>
+                        {% else %}
+                            <span class="badge badge-warning">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if txn.CID == 'unallocated' and txn.posted == 'no' %}
+                            <button class="btn btn-success btn-sm" onclick="openEditModal('{{ txn.entryId }}')">
+                                Edit CID
+                            </button>
+                        {% else %}
+                            <span style="color: var(--color-text-muted);">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: var(--spacing-2xl); color: var(--color-text-muted);">
+                        {% if search %}
+                            No transactions found matching "{{ search }}"
+                        {% else %}
+                            No transactions found in the last 45 days
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Edit CID Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Assign Customer ID & Post Payment</h3>
+                <button type="button" class="btn-close" onclick="closeEditModal()"></button>
+            </div>
+            <form id="editForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Entry ID:</label>
+                        <input id="modalEntryId" type="text" class="form-control" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount:</label>
+                        <input id="modalAmount" type="text" class="form-control" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Reference:</label>
+                        <input id="modalReference" type="text" class="form-control" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Remittance Info:</label>
+                        <textarea id="modalRemittanceInfo" class="form-control" disabled></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="required"><strong>Customer ID (CID):</strong></label>
+                        <input id="modalCID" type="text" class="form-control" placeholder="Enter correct CID" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Note (Optional):</label>
+                        <textarea id="modalNote" class="form-control" placeholder="e.g., USE CID123 AS REFERENCE"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-check">
+                            <input type="checkbox" class="form-check-input" id="markAsPostedCheckbox" onchange="togglePostButton()">
+                            <strong>Mark as already posted (skip UISP posting)</strong>
+                        </label>
+                        <small>Check this if this transaction was already manually captured in UISP.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="button" id="saveOnlyBtn" class="btn btn-primary" onclick="submitEdit(false)">Save Only</button>
+                    <button type="button" id="savePostBtn" class="btn btn-success" onclick="submitEdit(true)">Save & Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openEditModal(entryId) {
+    fetch(`/api/failed/${entryId}`)
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('modalEntryId').value = data.entryId;
+            document.getElementById('modalAmount').value = 'ZAR ' + data.amount;
+            document.getElementById('modalReference').value = data.reference || '-';
+            document.getElementById('modalRemittanceInfo').value = data.remittance_info || '-';
+            document.getElementById('modalCID').value = '';
+            document.getElementById('modalNote').value = '';
+            document.getElementById('markAsPostedCheckbox').checked = false;
+            document.getElementById('modalCID').dataset.entryId = entryId;
+            const modal = document.getElementById('editModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+        })
+        .catch(e => alert('Error loading transaction: ' + e));
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+}
+
+function togglePostButton() {
+    const markAsPosted = document.getElementById('markAsPostedCheckbox').checked;
+    const savePostBtn = document.getElementById('savePostBtn');
+    const saveOnlyBtn = document.getElementById('saveOnlyBtn');
+
+    if (markAsPosted) {
+        savePostBtn.disabled = true;
+        savePostBtn.style.opacity = '0.5';
+        savePostBtn.style.cursor = 'not-allowed';
+        saveOnlyBtn.textContent = 'Save & Mark Posted';
+        saveOnlyBtn.classList.remove('btn-primary');
+        saveOnlyBtn.classList.add('btn-success');
+    } else {
+        savePostBtn.disabled = false;
+        savePostBtn.style.opacity = '1';
+        savePostBtn.style.cursor = 'pointer';
+        saveOnlyBtn.textContent = 'Save Only';
+        saveOnlyBtn.classList.remove('btn-success');
+        saveOnlyBtn.classList.add('btn-primary');
+    }
+}
+
+function submitEdit(postNow) {
+    const cid = document.getElementById('modalCID').value.trim();
+    const note = document.getElementById('modalNote').value.trim();
+    const entryId = document.getElementById('modalCID').dataset.entryId;
+    const markAsPosted = document.getElementById('markAsPostedCheckbox').checked;
+
+    if (!cid || cid === 'unallocated') {
+        const cidField = document.getElementById('modalCID');
+        cidField.style.border = '2px solid #f44336';
+        alert('Please enter a valid CID');
+        setTimeout(() => {
+            cidField.style.border = '2px solid #4CAF50';
+        }, 2000);
+        return;
+    }
+
+    if (markAsPosted) {
+        if (!confirm(`Confirm: Mark transaction as already posted for CID ${cid}?\n\nThis will update the CID and mark the transaction as posted WITHOUT sending to UISP API.`)) {
+            return;
+        }
+    }
+
+    const formData = new FormData();
+    formData.append('cid', cid);
+    formData.append('note', note);
+    formData.append('post_now', postNow ? 'yes' : 'no');
+    formData.append('mark_as_posted', markAsPosted ? 'yes' : 'no');
+
+    fetch(`/update_cid/${entryId}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success' || data.status === 'partial') {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(e => alert('Error: ' + e));
+}
+
+window.onclick = function(e) {
+    const modal = document.getElementById('editModal');
+    if (e.target === modal) {
+        closeEditModal();
+    }
+}
+</script>
+
+{% if transactions.pages > 1 %}
+<div class="pagination">
+    {% if transactions.has_prev %}
+        <a href="?page=1&status={{ status }}{% if search %}&search={{ search }}{% endif %}">« First</a>
+        <a href="?page={{ transactions.prev_num }}&status={{ status }}{% if search %}&search={{ search }}{% endif %}">‹ Prev</a>
+    {% endif %}
+    {% for page_num in transactions.iter_pages() %}
+        {% if page_num %}
+            {% if page_num == transactions.page %}
+                <span class="active">{{ page_num }}</span>
+            {% else %}
+                <a href="?page={{ page_num }}&status={{ status }}{% if search %}&search={{ search }}{% endif %}">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            <span>...</span>
+        {% endif %}
+    {% endfor %}
+    {% if transactions.has_next %}
+        <a href="?page={{ transactions.next_num }}&status={{ status }}{% if search %}&search={{ search }}{% endif %}">Next ›</a>
+        <a href="?page={{ transactions.pages }}&status={{ status }}{% if search %}&search={{ search }}{% endif %}">Last »</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

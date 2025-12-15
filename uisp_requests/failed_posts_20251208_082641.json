@@ -1,0 +1,8 @@
+[
+  {
+    "entryId": "20251206000003",
+    "CID": "1249",
+    "amount": 875.0,
+    "error": "422: {\"code\":422,\"message\":\"This action is not possible, while the client is lead.\",\"errors\":[]}"
+  }
+]
