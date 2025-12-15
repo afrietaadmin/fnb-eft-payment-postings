@@ -105,12 +105,16 @@ def login():
         session.modified = True
         logger.info(f"Session set: login_sync_success=True, count={refresh_count}, total={len(customers)}")
 
+        # Also use flash as backup notification method
+        flash(f'UISP data synced: Updated {refresh_count}/{len(customers)} customers', 'success')
+
     except Exception as e:
         logger.error(f"=== UISP sync failed ===: {str(e)}", exc_info=True)
         # Don't block login if refresh fails
         session['login_sync_error'] = True
         session.modified = True
         logger.warning(f"Session set: login_sync_error=True")
+        flash('UISP data sync failed - some customer data may be outdated', 'warning')
 
     # Check if password change is required
     if user.must_change_password:
