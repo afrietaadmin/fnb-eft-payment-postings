@@ -230,6 +230,12 @@
 
     // Show login sync notification if data was synced
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Session data:', {
+            login_sync_success: {{ 'true' if session.get('login_sync_success') else 'false' }},
+            login_sync_error: {{ 'true' if session.get('login_sync_error') else 'false' }},
+            login_sync_count: {{ session.get('login_sync_count', 0) }},
+            login_sync_total: {{ session.get('login_sync_total', 0) }}
+        });
         {% if session.get('login_sync_success') %}
             showNotification(
                 'UISP Data Synced',

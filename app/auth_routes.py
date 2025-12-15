@@ -1,7 +1,7 @@
 """
 Authentication routes for user login, logout, and management
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
 from flask_login import login_user, logout_user, current_user, login_required
 from datetime import datetime, timezone
 from app import db, limiter
@@ -71,16 +71,20 @@ def login():
     db.session.commit()
 
     login_user(user, remember=remember)
+    session.permanent = True
     log_activity('login_success', f'User logged in', endpoint='auth.login', method='POST')
 
     # Refresh UISP data in background (non-blocking)
+    logger.info(f"=== Starting UISP data sync for user {user.username} ===")
     try:
         handler = UISPSuspensionHandler()
         customers = Customer.query.all()
         refresh_count = 0
+        logger.info(f"Found {len(customers)} customers to sync")
 
         for customer in customers:
             try:
+                logger.info(f"Syncing customer {customer.id}: {customer.first_name} {customer.last_name} (UISP: {customer.uisp_client_id})")
                 updated_customer = handler.fetch_and_cache_client(customer.uisp_client_id)
                 if updated_customer:
                     handler.fetch_and_cache_services(updated_customer)
@@ -88,22 +92,25 @@ def login():
                     handler.fetch_and_cache_payments(updated_customer)
                     handler.analyze_payment_pattern(updated_customer)
                     refresh_count += 1
+                    logger.info(f"Successfully synced customer {customer.id}")
             except Exception as e:
                 logger.warning(f"Error refreshing customer {customer.uisp_client_id} on login: {str(e)}")
                 continue
 
-        logger.info(f"Refreshed {refresh_count}/{len(customers)} customers on user login")
+        logger.info(f"=== UISP sync complete: Refreshed {refresh_count}/{len(customers)} customers ===")
         # Store sync info in session for frontend notification
-        from flask import session as flask_session
-        flask_session['login_sync_success'] = True
-        flask_session['login_sync_count'] = refresh_count
-        flask_session['login_sync_total'] = len(customers)
+        session['login_sync_success'] = True
+        session['login_sync_count'] = refresh_count
+        session['login_sync_total'] = len(customers)
+        session.modified = True
+        logger.info(f"Session set: login_sync_success=True, count={refresh_count}, total={len(customers)}")
 
     except Exception as e:
-        logger.warning(f"Could not refresh UISP data on login: {str(e)}")
+        logger.error(f"=== UISP sync failed ===: {str(e)}", exc_info=True)
         # Don't block login if refresh fails
-        from flask import session as flask_session
-        flask_session['login_sync_error'] = True
+        session['login_sync_error'] = True
+        session.modified = True
+        logger.warning(f"Session set: login_sync_error=True")
 
     # Check if password change is required
     if user.must_change_password:
