@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% block title %}Suspension Candidates{% endblock %}
+{% block content %}
+<style>
+    .candidates-container {
+        margin-bottom: 20px;
+    }
+    .candidate-card {
+        border: 1px solid #f39c12;
+        border-radius: 4px;
+        padding: 15px;
+        margin-bottom: 10px;
+        background-color: #fffbf0;
+        border-left: 4px solid #f39c12;
+    }
+    .candidate-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+    .info-block {
+        border-right: 1px solid #ddd;
+        padding-right: 10px;
+    }
+    .info-block:last-child {
+        border-right: none;
+    }
+    .label {
+        font-weight: bold;
+        color: #555;
+        font-size: 12px;
+    }
+    .value {
+        color: #333;
+        margin-top: 5px;
+    }
+    .pattern-info {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+    }
+    .actions {
+        margin-top: 10px;
+    }
+    .btn-small {
+        padding: 5px 10px;
+        font-size: 12px;
+        margin-right: 5px;
+    }
+    .reason {
+        color: #e74c3c;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .bulk-actions {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #ecf0f1;
+        border-radius: 4px;
+    }
+    .checkbox {
+        margin-right: 10px;
+    }
+</style>
+
+<h2>Suspensions</h2>
+
+<div class="filter-buttons">
+    <a href="{{ url_for('suspension.list_suspensions', filter='all') }}" class="btn btn-secondary">
+        All Suspensions
+    </a>
+    <a href="{{ url_for('suspension.list_suspensions', filter='active') }}" class="btn btn-secondary">
+        Active Suspensions
+    </a>
+    <a href="{{ url_for('suspension.list_suspensions', filter='resolved') }}" class="btn btn-secondary">
+        Resolved Suspensions
+    </a>
+    <a href="{{ url_for('suspension.suspension_candidates') }}" class="btn btn-primary">
+        Suspension Candidates
+    </a>
+</div>
+
+<h3 style="margin-top: 20px;">Suspension Candidates</h3>
+<p>These customers meet the suspension criteria and are not yet suspended.</p>
+
+<div class="bulk-actions">
+    <label>
+        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+        Select All
+    </label>
+    <button class="btn btn-danger" onclick="bulkSuspend()" style="margin-left: 20px;">
+        Suspend Selected
+    </button>
+</div>
+
+<div class="candidates-container">
+    {% if candidates %}
+        {% for item in candidates %}
+        <div class="candidate-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div>
+                    <input type="checkbox" class="candidate-checkbox" value="{{ item.customer.id }}__{{ item.customer.services[0].id if item.customer.services else 0 }}" />
+                    <strong>
+                        <a href="{{ url_for('suspension.customer_suspension_details', customer_id=item.customer.id) }}">
+                            {{ item.customer.first_name }} {{ item.customer.last_name }}
+                        </a>
+                    </strong>
+                </div>
+                <span class="reason">{{ item.reason }}</span>
+            </div>
+
+            <div class="candidate-info">
+                <div class="info-block">
+                    <div class="label">Customer ID</div>
+                    <div class="value">{{ item.customer.uisp_client_id }}</div>
+                </div>
+                <div class="info-block">
+                    <div class="label">Account Balance</div>
+                    <div class="value" style="color: {% if item.customer.account_outstanding > 0 %}#e74c3c{% else %}#27ae60{% endif %};">
+                        R {{ item.customer.account_outstanding | round(2) }}
+                    </div>
+                </div>
+                <div class="info-block">
+                    <div class="label">VIP Status</div>
+                    <div class="value">
+                        {% if item.customer.is_vip %}
+                            <span style="color: #9b59b6;">VIP</span>
+                        {% else %}
+                            Standard
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="info-block">
+                    <div class="label">Active Services</div>
+                    <div class="value">{{ item.customer.services | length }}</div>
+                </div>
+            </div>
+
+            {% if item.patterns %}
+            <div class="pattern-info">
+                <strong>Payment Pattern:</strong>
+                <div style="margin-top: 5px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; font-size: 12px;">
+                    <div>
+                        <strong>Late Payments:</strong> {{ item.patterns.late_payment_count }}
+                    </div>
+                    <div>
+                        <strong>Missed Payments:</strong> {{ item.patterns.missed_payment_count }}
+                    </div>
+                    <div>
+                        <strong>Avg Days Late:</strong> {{ item.patterns.avg_days_late | round(0) if item.patterns.avg_days_late else 'N/A' }}
+                    </div>
+                    <div>
+                        <strong>Risk Level:</strong>
+                        <span style="color: {% if item.patterns.is_risky %}#e74c3c{% else %}#27ae60{% endif %}; font-weight: bold;">
+                            {% if item.patterns.is_risky %}HIGH{% else %}LOW{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="actions">
+                <button class="btn btn-small btn-danger"
+                        onclick="suspendService({{ item.customer.id }}, '{{ item.customer.services[0].id if item.customer.services else 0 }}', '{{ item.reason }}')">
+                    Suspend Now
+                </button>
+                <a href="{{ url_for('suspension.customer_suspension_details', customer_id=item.customer.id) }}"
+                   class="btn btn-small btn-primary">View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Pagination -->
+        {% if pagination.pages > 1 %}
+        <div style="margin-top: 30px; text-align: center;">
+            {% if pagination.has_prev %}
+                <a href="{{ url_for('suspension.suspension_candidates', page=pagination.prev_num) }}" class="btn btn-secondary">← Previous</a>
+            {% endif %}
+
+            <span style="margin: 0 10px;">
+                Page {{ pagination.page }} of {{ pagination.pages }}
+            </span>
+
+            {% if pagination.has_next %}
+                <a href="{{ url_for('suspension.suspension_candidates', page=pagination.next_num) }}" class="btn btn-secondary">Next →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="card" style="background-color: #ecf0f1; padding: 30px; text-align: center;">
+            <p style="color: #27ae60; font-weight: bold;">All customers are in good standing. No suspensions needed.</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleSelectAll() {
+    const checkboxes = document.querySelectorAll('.candidate-checkbox');
+    const selectAll = document.getElementById('selectAll');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+}
+
+function suspendService(customerId, serviceId, reason) {
+    if (!confirm(`Suspend service for this customer?\n\nReason: ${reason}`)) {
+        return;
+    }
+
+    const note = prompt('Enter suspension note (optional):');
+
+    fetch('{{ url_for("suspension.api_suspend_service") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            customer_id: customerId,
+            service_id: serviceId,
+            reason: reason,
+            note: note || ''
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Service suspended successfully');
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to suspend service');
+    });
+}
+
+function bulkSuspend() {
+    const selected = document.querySelectorAll('.candidate-checkbox:checked');
+    if (selected.length === 0) {
+        alert('Please select at least one service to suspend');
+        return;
+    }
+
+    if (!confirm(`Suspend ${selected.length} services?`)) {
+        return;
+    }
+
+    const suspensions = Array.from(selected).map(checkbox => {
+        const [customerId, serviceId] = checkbox.value.split('__');
+        return {
+            customer_id: parseInt(customerId),
+            service_id: parseInt(serviceId),
+            reason: 'Bulk suspension - Non-payment'
+        };
+    });
+
+    fetch('{{ url_for("suspension.api_bulk_suspend") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            suspensions: suspensions
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const message = `Successfully suspended ${data.success_count} services`;
+        if (data.failed_count > 0) {
+            alert(message + `\nFailed: ${data.failed_count}`);
+        } else {
+            alert(message);
+        }
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to perform bulk suspension');
+    });
+}
+</script>
+{% endblock %}

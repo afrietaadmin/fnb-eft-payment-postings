@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FNB EFT Payment Postings</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
+        header { background: #2c3e50; color: white; padding: 20px; }
+        header h1 { font-size: 20px; }
+        nav { background: #34495e; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-links { display: flex; gap: 0; }
+        nav a { color: white; text-decoration: none; margin-right: 20px; padding: 8px 0; border-bottom: 2px solid transparent; }
+        nav a:hover { border-bottom: 2px solid #3498db; }
+        nav a.active { border-bottom: 2px solid #3498db; }
+        .nav-user { display: flex; align-items: center; gap: 20px; }
+        .user-info { color: #ecf0f1; font-size: 14px; }
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; background-color: #2c3e50; min-width: 200px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; right: 0; }
+        .dropdown-content a { color: white; padding: 12px 16px; text-decoration: none; display: block; margin: 0; border: none; }
+        .dropdown-content a:hover { background-color: #34495e; }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropdown-btn { background: transparent; color: white; padding: 8px 12px; border: 1px solid white; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .dropdown-btn:hover { background-color: #2c3e50; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 4px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #ecf0f1; font-weight: 600; }
+        tr:hover { background: #f9f9f9; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-secondary { background: #95a5a6; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn:hover { opacity: 0.9; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .stat-box { background: white; padding: 20px; border-radius: 4px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-number { font-size: 32px; font-weight: bold; color: #3498db; }
+        .stat-label { color: #666; margin-top: 5px; }
+        .pagination { margin-top: 20px; text-align: center; }
+        .pagination a, .pagination span { margin: 0 5px; padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; }
+        .pagination a { color: #3498db; }
+        .pagination .active { background: #3498db; color: white; border-color: #3498db; }
+        .refresh-btn { background: #27ae60; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-right: 10px; }
+        .refresh-btn:hover { background: #229954; }
+        .refresh-btn.loading { background: #f39c12; pointer-events: none; }
+        .refresh-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .refresh-toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 20px; border-radius: 4px; color: white; z-index: 1000; animation: slideIn 0.3s ease-out; }
+        .refresh-toast.success { background: #27ae60; }
+        .refresh-toast.error { background: #e74c3c; }
+        @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>FNB EFT Payment Postings</h1>
+        <p>Transaction Management System</p>
+    </header>
+    <nav>
+        <div class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/transactions">Transactions</a>
+            <a href="/transaction-history">History (45d)</a>
+            <a href="/failed">Failed ({% if stats %}{{ stats.failed }}{% endif %})</a>
+            <a href="/customer-analysis">Customer Analysis</a>
+            <a href="{{ url_for('suspension.list_suspensions') }}">Suspensions</a>
+            <a href="/execution-logs">Logs</a>
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <a href="{{ url_for('auth.users_page') }}">👥 Users</a>
+            <a href="{{ url_for('auth.activity_logs_page') }}">📊 Activity</a>
+            {% endif %}
+        </div>
+        <div class="nav-user">
+            {% if current_user.is_authenticated %}
+            <button class="refresh-btn" onclick="refreshAllData()" title="Refresh all customer data from UISP">
+                <span>🔄</span>
+                <span id="refresh-text">Refresh Data</span>
+            </button>
+            <div class="user-info">
+                👤 {{ current_user.full_name or current_user.username }}
+                {% if current_user.role == 'admin' %}<span style="background: #f39c12; padding: 2px 6px; border-radius: 3px; font-size: 11px;">ADMIN</span>{% endif %}
+            </div>
+            <div class="dropdown">
+                <button class="dropdown-btn">Settings ▼</button>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('auth.change_password_page') }}">🔑 Change Password</a>
+                    <a href="{{ url_for('auth.logout') }}" style="color: #e74c3c;">🚪 Logout</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+    function refreshAllData() {
+        const btn = event.target.closest('.refresh-btn');
+        const textEl = document.getElementById('refresh-text');
+
+        // Prevent multiple clicks
+        if (btn.classList.contains('loading')) {
+            return;
+        }
+
+        // Show loading state
+        btn.classList.add('loading');
+        textEl.innerHTML = '<span class="refresh-spinner"></span> Refreshing...';
+
+        // Call refresh endpoint
+        fetch('{{ url_for("suspension.api_refresh_all_customers") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            btn.classList.remove('loading');
+
+            if (data.status === 'success') {
+                textEl.innerHTML = '✓ Refresh Data';
+                showToast(
+                    `Data refreshed successfully! Updated ${data.refresh_count}/${data.total_customers} customers in ${data.elapsed_seconds.toFixed(1)}s`,
+                    'success'
+                );
+
+                // Reset button after 2 seconds
+                setTimeout(() => {
+                    textEl.innerHTML = '🔄 Refresh Data';
+                }, 2000);
+            } else {
+                textEl.innerHTML = '🔄 Refresh Data';
+                showToast(
+                    `Refresh failed: ${data.error || 'Unknown error'}`,
+                    'error'
+                );
+            }
+        })
+        .catch(error => {
+            btn.classList.remove('loading');
+            textEl.innerHTML = '🔄 Refresh Data';
+            console.error('Error:', error);
+            showToast('Failed to refresh data', 'error');
+        });
+    }
+
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `refresh-toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            toast.style.animation = 'slideIn 0.3s ease-out reverse';
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+    }
+    </script>
+</body>
+</html>
