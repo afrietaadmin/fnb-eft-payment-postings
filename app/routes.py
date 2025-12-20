@@ -295,11 +295,17 @@ def execution_logs():
 @csrf.exempt
 def bulk_update_transactions():
     """Bulk update multiple transactions with CID and notes"""
-    data = request.get_json()
-    updates = data.get('updates', [])
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'status': 'error', 'error': 'Invalid request: No JSON data provided'}), 400
 
-    if not updates:
-        return jsonify({'error': 'No updates provided'}), 400
+        updates = data.get('updates', [])
+        if not updates:
+            return jsonify({'status': 'error', 'error': 'No updates provided. Please fill in CIDs for all transactions.'}), 400
+    except Exception as e:
+        logger.error(f'Error parsing bulk update request: {e}')
+        return jsonify({'status': 'error', 'error': f'Invalid request format: {str(e)}'}), 400
 
     updated_count = 0
     errors = []
