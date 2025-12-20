@@ -238,7 +238,10 @@ const noteTemplates = {
 // Single transaction edit
 function openResolveModal(entryId) {
     fetch(`/api/failed/${entryId}`)
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+            return r.json();
+        })
         .then(data => {
             document.getElementById('modalEntryId').value = data.entryId;
             document.getElementById('modalAmount').value = 'ZAR ' + data.amount;
@@ -378,11 +381,22 @@ function submitResolve(postNow) {
     formData.append('post_now', postNow ? 'yes' : 'no');
     formData.append('mark_as_posted', markAsPosted ? 'yes' : 'no');
 
+    // Add CSRF token from meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (csrfToken) {
+        formData.append('csrf_token', csrfToken);
+    }
+
     fetch(`/update_cid/${entryId}`, {
         method: 'POST',
         body: formData
     })
-    .then(r => r.json())
+    .then(r => {
+        if (!r.ok) {
+            throw new Error(`HTTP error! status: ${r.status}`);
+        }
+        return r.json();
+    })
     .then(data => {
         if (data.status === 'success' || data.status === 'partial') {
             alert(data.message);
@@ -421,7 +435,12 @@ function openBulkEditModal() {
     }
 
     // Fetch transaction details for all selected
-    Promise.all(selectedEntryIds.map(id => fetch(`/api/failed/${id}`).then(r => r.json())))
+    Promise.all(selectedEntryIds.map(id =>
+        fetch(`/api/failed/${id}`).then(r => {
+            if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+            return r.json();
+        })
+    ))
         .then(transactions => {
             displayBulkTransactions(transactions);
             document.getElementById('bulkSelectedCount').textContent = transactions.length;
@@ -543,14 +562,25 @@ function submitBulkEdit() {
     }
 
     // Submit bulk update
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    if (csrfToken) {
+        headers['X-CSRFToken'] = csrfToken;
+    }
+
     fetch('/bulk_update_transactions', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: headers,
         body: JSON.stringify({ updates: updates })
     })
-    .then(r => r.json())
+    .then(r => {
+        if (!r.ok) {
+            throw new Error(`HTTP error! status: ${r.status}`);
+        }
+        return r.json();
+    })
     .then(data => {
         if (data.status === 'success') {
             alert(`Successfully updated ${data.updated} transaction(s)`);
@@ -579,7 +609,10 @@ function lookupCustomerPayments() {
     historySection.style.display = 'block';
 
     fetch(`/api/customer_payments/${cid}`)
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+            return r.json();
+        })
         .then(data => {
             if (data.status === 'success') {
                 displayPaymentHistory(data);
@@ -681,7 +714,10 @@ function lookupBulkPayment(entryId, cidInputElement) {
     document.body.appendChild(modal);
 
     fetch(`/api/customer_payments/${cid}`)
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+            return r.json();
+        })
         .then(data => {
             const content = document.getElementById('bulkPaymentHistoryContent');
             if (data.status === 'success') {
