@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
 from flask_login import login_required, current_user
-from app import db
+from app import db, csrf
 from app.models import Transaction, FailedTransaction, AuditLog, ExecutionLog, UISPPayment
 from app.utils import resolve_failed_transaction, log_audit, log_user_activity
 from app.config import Config
@@ -137,6 +137,7 @@ def get_failed_transaction(entry_id):
 
 @main_bp.route('/update_cid/<entry_id>', methods=['POST'])
 @login_required
+@csrf.exempt
 def update_cid(entry_id):
     """Update CID for a transaction and optionally post it"""
     cid = request.form.get('cid', '').strip()
@@ -196,6 +197,7 @@ def update_cid(entry_id):
 
 @main_bp.route('/api/resolve/<entry_id>', methods=['POST'])
 @login_required
+@csrf.exempt
 def resolve_transaction(entry_id):
     data = request.get_json()
     manual_cid = data.get('manual_cid')
@@ -290,6 +292,7 @@ def execution_logs():
 
 @main_bp.route('/bulk_update_transactions', methods=['POST'])
 @login_required
+@csrf.exempt
 def bulk_update_transactions():
     """Bulk update multiple transactions with CID and notes"""
     data = request.get_json()
