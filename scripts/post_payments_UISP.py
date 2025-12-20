@@ -684,7 +684,7 @@ def main():
 
                 logger.info(message)
                 update_telegram_messages('post_payments_UISP', message)
-                log_execution('post_payments_UISP', 'SUCCESS', message, total, success, amount)
+                log_execution('post_payments_UISP', 'SUCCESS', message, total, failed, amount)
 
         except Exception as e:
             logger.error(f'Process failed: {e}')
