@@ -27,20 +27,38 @@ def send_telegram_message(message):
         logger.error(f'Failed to send Telegram message: {e}')
         return False
 
+def map_error_code(error_code, reason):
+    """Map error codes to human-readable messages"""
+    if error_code == '422':
+        return '⚠️ Client is Archived - Cannot post to archived clients'
+    elif error_code == 'DUPLICATE_UISP_MANUAL_REVIEW':
+        return '⚠️ Duplicate Payment - Same amount already posted to this client'
+    elif error_code == 'LEAD_CONVERSION_FAILED':
+        return '❌ Lead Conversion Failed - Could not convert lead to client'
+    else:
+        return f'❌ Error ({error_code}): {reason[:80]}'
+
 def build_summary():
     with app.app_context():
-        summary = '📊 FNB EFT Payment Postings Summary\n\n'
+        summary = '📊 FNB EFT Payment Postings - Daily Summary\n\n'
 
-        # Get latest execution logs
-        logs = ExecutionLog.query.order_by(ExecutionLog.timestamp.desc()).limit(5).all()
-        summary += '══ Recent Executions ══\n'
-        for log in logs:
-            status_emoji = '✅' if log.status == 'SUCCESS' else '❌'
-            summary += f'{status_emoji} {log.script_name}: {log.transactions_processed} processed'
-            if log.transactions_failed > 0:
-                summary += f', {log.transactions_failed} failed'
-            if log.total_amount > 0:
-                summary += f', ZAR {log.total_amount:,.2f}'
+        # Get latest post_payments_UISP execution log only
+        latest_post = ExecutionLog.query.filter_by(script_name='post_payments_UISP')\
+            .order_by(ExecutionLog.timestamp.desc()).first()
+
+        if latest_post:
+            summary += '════ PAYMENT POSTING RESULTS ════\n'
+            if latest_post.status == 'SUCCESS':
+                summary += f'✅ Status: Success\n'
+                summary += f'📤 Posted: {latest_post.transactions_processed} transaction(s)\n'
+                summary += f'💰 Total Amount: ZAR {latest_post.total_amount:,.2f}\n'
+
+                if latest_post.transactions_failed > 0:
+                    summary += f'❌ Failed: {latest_post.transactions_failed}\n'
+            else:
+                summary += f'❌ Status: Failed\n'
+                summary += f'⚠️  Message: {latest_post.message}\n'
+
             summary += '\n'
 
         # Get unallocated transactions (missing CID)
@@ -49,69 +67,78 @@ def build_summary():
         # Get actual failed transactions (posting errors)
         failed = FailedTransaction.query.filter_by(resolved=False).all()
 
+        # Categorize failed transactions
+        archived_clients = [f for f in failed if f.error_code == '422']
+        duplicates = [f for f in failed if f.error_code == 'DUPLICATE_UISP_MANUAL_REVIEW']
+        lead_conversions = [f for f in failed if f.error_code == 'LEAD_CONVERSION_FAILED']
+        other_errors = [f for f in failed if f.error_code not in ['422', 'DUPLICATE_UISP_MANUAL_REVIEW', 'LEAD_CONVERSION_FAILED']]
+
         # Total items needing attention
         total_issues = len(unallocated) + len(failed)
 
-        summary += f'\n══ Total Items Needing Attention: {total_issues} ══\n'
-
-        # Section 1: Unallocated Transactions
-        if unallocated:
-            summary += f'\n⚠️  UNALLOCATED TRANSACTIONS (Missing CID)\n'
-            summary += f'🔍 {len(unallocated)} transaction(s) need CID assignment\n\n'
-
-            for txn in unallocated[:5]:  # Show first 5
-                summary += f'  • {txn.entryId} - ZAR {txn.amount:,.2f}\n'
-
-                # Add reference field (truncate if too long)
-                ref = txn.reference or 'N/A'
-                if len(ref) > 40:
-                    ref = ref[:37] + '...'
-                summary += f'    Ref: "{ref}"\n'
-
-                # Add remittance info (truncate if too long)
-                info = txn.remittance_info or 'N/A'
-                if len(info) > 50:
-                    info = info[:47] + '...'
-                summary += f'    Info: "{info}"\n'
-                summary += f'    Date: {txn.valueDate}\n\n'
-
-            if len(unallocated) > 5:
-                summary += f'  ... and {len(unallocated) - 5} more unallocated transactions\n'
-
-        # Section 2: Failed Transactions (API errors, duplicates, etc.)
-        if failed:
-            summary += f'\n🚨 FAILED POSTINGS (API Errors/Duplicates)\n'
-            summary += f'❌ {len(failed)} transaction(s) failed during posting\n\n'
-
-            for f in failed[:5]:  # Show first 5
-                txn = Transaction.query.filter_by(entryId=f.entryId).first()
-                if txn:
-                    summary += f'  • {f.entryId} - ZAR {txn.amount:,.2f}\n'
-                    summary += f'    CID: {txn.CID}\n'
-
-                    # Add failure reason (truncate if too long)
-                    reason = f.reason or 'Unknown error'
-                    if len(reason) > 60:
-                        reason = reason[:57] + '...'
-                    summary += f'    Error: {reason}\n'
-
-                    # Add reference for context
-                    ref = txn.reference or 'N/A'
-                    if len(ref) > 40:
-                        ref = ref[:37] + '...'
-                    summary += f'    Ref: "{ref}"\n'
-                    summary += f'    Date: {txn.valueDate}\n\n'
-
-            if len(failed) > 5:
-                summary += f'  ... and {len(failed) - 5} more failed transactions\n'
-
-        # If nothing needs attention
         if total_issues == 0:
-            summary += '\n✅ All transactions processed successfully!\n'
+            summary += '✅ All transactions processed successfully!\n'
             summary += 'No unallocated or failed transactions.\n'
+        else:
+            summary += f'⚠️  ATTENTION REQUIRED: {total_issues} item(s) need action\n\n'
+
+            # Section 1: Unallocated Transactions
+            if unallocated:
+                unallocated_amount = sum(t.amount for t in unallocated)
+                summary += f'🔍 UNALLOCATED ({len(unallocated)} txn, ZAR {unallocated_amount:,.2f})\n'
+                summary += '   Missing CID - Run sanitize_data to extract\n\n'
+
+            # Section 2: Lead Conversions (if any)
+            if lead_conversions:
+                lead_amount = sum(Transaction.query.filter_by(entryId=f.entryId).first().amount
+                                 for f in lead_conversions if Transaction.query.filter_by(entryId=f.entryId).first())
+                summary += f'👤 LEAD CONVERSION FAILED ({len(lead_conversions)} txn, ZAR {lead_amount:,.2f})\n'
+                for f in lead_conversions:
+                    txn = Transaction.query.filter_by(entryId=f.entryId).first()
+                    if txn:
+                        summary += f'   • {f.entryId} (CID {txn.CID}): {f.reason[:60]}...\n'
+                summary += '\n'
+
+            # Section 3: Archived Clients
+            if archived_clients:
+                archived_amount = sum(Transaction.query.filter_by(entryId=f.entryId).first().amount
+                                     for f in archived_clients if Transaction.query.filter_by(entryId=f.entryId).first())
+                summary += f'🚫 ARCHIVED CLIENTS ({len(archived_clients)} txn, ZAR {archived_amount:,.2f})\n'
+                summary += '   Need to be restored in UISP\n'
+                for f in archived_clients:
+                    txn = Transaction.query.filter_by(entryId=f.entryId).first()
+                    if txn:
+                        summary += f'   • {f.entryId} (CID {txn.CID}): ZAR {txn.amount:,.2f}\n'
+                summary += '\n'
+
+            # Section 4: Duplicate Payments
+            if duplicates:
+                dup_amount = sum(Transaction.query.filter_by(entryId=f.entryId).first().amount
+                                for f in duplicates if Transaction.query.filter_by(entryId=f.entryId).first())
+                summary += f'⚠️  DUPLICATES ({len(duplicates)} txn, ZAR {dup_amount:,.2f})\n'
+                summary += '   Manual review required\n'
+                for f in duplicates:
+                    txn = Transaction.query.filter_by(entryId=f.entryId).first()
+                    if txn:
+                        summary += f'   • {f.entryId} (CID {txn.CID}): ZAR {txn.amount:,.2f}\n'
+                summary += '\n'
+
+            # Section 5: Other Errors
+            if other_errors:
+                other_amount = sum(Transaction.query.filter_by(entryId=f.entryId).first().amount
+                                  for f in other_errors if Transaction.query.filter_by(entryId=f.entryId).first())
+                summary += f'❌ OTHER ERRORS ({len(other_errors)} txn, ZAR {other_amount:,.2f})\n'
+                for f in other_errors[:3]:  # Show first 3
+                    txn = Transaction.query.filter_by(entryId=f.entryId).first()
+                    if txn:
+                        summary += f'   • {f.entryId} (CID {txn.CID})\n'
+                        summary += f'     {map_error_code(f.error_code, f.reason)}\n'
+                if len(other_errors) > 3:
+                    summary += f'   ... and {len(other_errors) - 3} more errors\n'
+                summary += '\n'
 
         # Web UI link
-        summary += f'\n📱 Access Web UI:\nhttp://10.150.98.6:5000/failed\n'
+        summary += f'\n🔗 Web Dashboard: http://10.150.98.6:5000/failed\n'
 
         return summary
 
