@@ -519,15 +519,18 @@ function submitBulkEdit() {
     const updates = [];
     let hasError = false;
     let firstErrorInput = null;
+    let totalInputs = 0;
+    let emptyInputs = 0;
 
     cidInputs.forEach(input => {
+        totalInputs++;
         const entryId = input.dataset.entryId;
         const cid = input.value.trim();
 
         if (!cid || cid === 'unallocated') {
+            emptyInputs++;
             input.style.border = '2px solid #f44336';
             if (!firstErrorInput) firstErrorInput = input;
-            alert(`Please enter a valid CID for transaction ${entryId}`);
             hasError = true;
             setTimeout(() => {
                 input.style.border = '1px solid #ddd';
@@ -548,6 +551,12 @@ function submitBulkEdit() {
 
     if (hasError) {
         if (firstErrorInput) firstErrorInput.focus();
+        alert(`Please fill in CID for all transactions (${emptyInputs} empty)`);
+        return;
+    }
+
+    if (updates.length === 0) {
+        alert('No transactions to update. Please select transactions and fill in their CIDs.');
         return;
     }
 
