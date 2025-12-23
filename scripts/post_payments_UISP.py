@@ -230,13 +230,154 @@ def convert_lead_to_client(client_id):
         logger.error(f'Exception while converting lead {client_id}: {e}')
         return False
 
+def _post_payment_with_lead_conversion(txn, payload, success_count, failed_count, total_amount, failed_transactions):
+    """
+    Post payment to UISP. If it fails due to lead issue, check if customer is a lead,
+    convert if needed, then retry the payment (reactive approach).
+
+    Note: Parameters are passed by reference where mutable (lists, dicts) so modifications
+    are reflected in the calling function.
+    """
+    try:
+        url = f"{Config.UISP_BASE_URL}payments"
+        headers = {
+            Config.UISP_AUTHORIZATION: Config.UISP_API_KEY,
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.post(url, json=payload, headers=headers, timeout=30)
+
+        if response.status_code in [200, 201]:
+            # Success on first attempt
+            txn.posted = 'yes'
+            db.session.commit()
+            total_amount[0] += txn.amount
+            success_count[0] += 1
+
+            log_audit(
+                'POST_PAYMENT',
+                'SUCCESS',
+                f"Posted {txn.amount} ZAR for CID {txn.CID}",
+                txn.entryId
+            )
+            logger.info(f'✅ Posted {txn.entryId}: {txn.amount} ZAR to CID {txn.CID}')
+        else:
+            # Payment failed - check if it's a lead-related issue
+            error_text = response.text[:500]
+            error_msg = f"{response.status_code}: {error_text}"
+
+            # Common lead-related error indicators
+            is_lead_related = any([
+                'lead' in error_text.lower(),
+                'must be a client' in error_text.lower(),
+                'not a client' in error_text.lower(),
+                response.status_code == 422  # Unprocessable Entity often indicates lead issue
+            ])
+
+            if is_lead_related:
+                logger.info(f'🔄 Payment failed for {txn.entryId} - checking if customer {payload.get("clientId")} is a lead...')
+
+                # Check if customer is a lead and convert if needed
+                client_id = payload.get('clientId')
+                if client_id and convert_lead_to_client(client_id):
+                    # Conversion successful - retry payment
+                    logger.info(f'↩️  Retrying payment for {txn.entryId} after lead conversion...')
+
+                    retry_response = requests.post(url, json=payload, headers=headers, timeout=30)
+
+                    if retry_response.status_code in [200, 201]:
+                        # Success after conversion
+                        txn.posted = 'yes'
+                        db.session.commit()
+                        total_amount[0] += txn.amount
+                        success_count[0] += 1
+
+                        log_audit(
+                            'POST_PAYMENT',
+                            'SUCCESS_AFTER_LEAD_CONVERSION',
+                            f"Converted lead {client_id} to client and posted {txn.amount} ZAR for CID {txn.CID}",
+                            txn.entryId
+                        )
+                        logger.info(f'✅ Posted {txn.entryId} after lead conversion: {txn.amount} ZAR to CID {txn.CID}')
+                        return
+                    else:
+                        # Failed after conversion
+                        error_msg = f"Failed after lead conversion - {retry_response.status_code}: {retry_response.text[:200]}"
+                else:
+                    # Lead conversion failed
+                    error_msg = f"Lead conversion failed for CID {client_id}"
+                    logger.error(f'❌ {error_msg}')
+
+            # Payment failed and could not be resolved
+            failed_count[0] += 1
+
+            # Create FailedTransaction record for manual review
+            existing_failed = FailedTransaction.query.filter_by(entryId=txn.entryId).first()
+            if not existing_failed:
+                failed_txn = FailedTransaction(
+                    entryId=txn.entryId,
+                    reason=f"UISP API error: {error_msg}",
+                    error_code=str(response.status_code),
+                    resolved=False
+                )
+                db.session.add(failed_txn)
+                db.session.commit()
+
+            failed_transactions.append({
+                'entryId': txn.entryId,
+                'CID': txn.CID,
+                'amount': txn.amount,
+                'error': error_msg
+            })
+            logger.error(f'❌ Failed {txn.entryId}: {error_msg}')
+
+            log_audit(
+                'POST_PAYMENT',
+                'FAILED',
+                error_msg,
+                txn.entryId
+            )
+
+    except Exception as e:
+        failed_count[0] += 1
+        error_msg = str(e)
+
+        # Create FailedTransaction record for manual review
+        existing_failed = FailedTransaction.query.filter_by(entryId=txn.entryId).first()
+        if not existing_failed:
+            failed_txn = FailedTransaction(
+                entryId=txn.entryId,
+                reason=f"Exception during posting: {error_msg}",
+                error_code='EXCEPTION',
+                resolved=False
+            )
+            db.session.add(failed_txn)
+            db.session.commit()
+
+        failed_transactions.append({
+            'entryId': txn.entryId,
+            'CID': txn.CID,
+            'amount': txn.amount,
+            'error': error_msg
+        })
+        logger.error(f'❌ Exception posting {txn.entryId}: {e}')
+
+        log_audit(
+            'POST_PAYMENT',
+            'EXCEPTION',
+            error_msg,
+            txn.entryId
+        )
+
+
 def post_to_uisp(transactions):
     """Post payments to UISP API and mark as posted"""
-    success_count = 0
-    failed_count = 0
-    duplicate_count = 0
+    # Use lists to allow pass-by-reference behavior in helper function
+    success_count = [0]
+    failed_count = [0]
+    duplicate_count = [0]
     failed_transactions = []
-    total_amount = 0.0
+    total_amount = [0.0]
 
     for txn in transactions:
         payload = build_uisp_payload(txn)
@@ -247,7 +388,7 @@ def post_to_uisp(transactions):
         # Check for duplicate payment in UISP (same CID + same amount within last 15 days)
         duplicate = check_duplicate_payment(txn)
         if duplicate:
-            duplicate_count += 1
+            duplicate_count[0] += 1
             reason = f"Duplicate payment found in UISP: CID{txn.CID} already paid R{duplicate['amount']:.2f} on {duplicate['created_date'].strftime('%Y-%m-%d')} ({duplicate['days_ago']} days ago). Provider: {duplicate['provider']}, Method: {duplicate['method']}. FLAGGED FOR MANUAL REVIEW."
 
             # Create FailedTransaction record for manual review
@@ -277,123 +418,14 @@ def post_to_uisp(transactions):
             })
             continue
 
-        # Check if client is a lead and convert to client if needed
-        client_id = payload.get('clientId')
-        if client_id:
-            if not convert_lead_to_client(client_id):
-                failed_count += 1
-                error_msg = f"Failed to convert lead {client_id} to client"
-
-                existing_failed = FailedTransaction.query.filter_by(entryId=txn.entryId).first()
-                if not existing_failed:
-                    failed_txn = FailedTransaction(
-                        entryId=txn.entryId,
-                        reason=error_msg,
-                        error_code='LEAD_CONVERSION_FAILED',
-                        resolved=False
-                    )
-                    db.session.add(failed_txn)
-                    db.session.commit()
-
-                failed_transactions.append({
-                    'entryId': txn.entryId,
-                    'CID': txn.CID,
-                    'amount': txn.amount,
-                    'error': error_msg
-                })
-                logger.error(f'❌ Failed {txn.entryId}: {error_msg}')
-                log_audit('POST_PAYMENT', 'FAILED', error_msg, txn.entryId)
-                continue
-
-        try:
-            url = f"{Config.UISP_BASE_URL}payments"
-            headers = {
-                Config.UISP_AUTHORIZATION: Config.UISP_API_KEY,
-                'Content-Type': 'application/json'
-            }
-
-            response = requests.post(url, json=payload, headers=headers, timeout=30)
-
-            if response.status_code in [200, 201]:
-                txn.posted = 'yes'
-                db.session.commit()
-                total_amount += txn.amount
-                success_count += 1
-
-                log_audit(
-                    'POST_PAYMENT',
-                    'SUCCESS',
-                    f"Posted {txn.amount} ZAR for CID {txn.CID}",
-                    txn.entryId
-                )
-                logger.info(f'✅ Posted {txn.entryId}: {txn.amount} ZAR to CID {txn.CID}')
-            else:
-                failed_count += 1
-                error_msg = f"{response.status_code}: {response.text[:200]}"
-
-                # Create FailedTransaction record for manual review
-                existing_failed = FailedTransaction.query.filter_by(entryId=txn.entryId).first()
-                if not existing_failed:
-                    failed_txn = FailedTransaction(
-                        entryId=txn.entryId,
-                        reason=f"UISP API error: {error_msg}",
-                        error_code=str(response.status_code),
-                        resolved=False
-                    )
-                    db.session.add(failed_txn)
-                    db.session.commit()
-
-                failed_transactions.append({
-                    'entryId': txn.entryId,
-                    'CID': txn.CID,
-                    'amount': txn.amount,
-                    'error': error_msg
-                })
-                logger.error(f'❌ Failed {txn.entryId}: {error_msg}')
-
-                log_audit(
-                    'POST_PAYMENT',
-                    'FAILED',
-                    error_msg,
-                    txn.entryId
-                )
-
-        except Exception as e:
-            failed_count += 1
-            error_msg = str(e)
-
-            # Create FailedTransaction record for manual review
-            existing_failed = FailedTransaction.query.filter_by(entryId=txn.entryId).first()
-            if not existing_failed:
-                failed_txn = FailedTransaction(
-                    entryId=txn.entryId,
-                    reason=f"Exception during posting: {error_msg}",
-                    error_code='EXCEPTION',
-                    resolved=False
-                )
-                db.session.add(failed_txn)
-                db.session.commit()
-
-            failed_transactions.append({
-                'entryId': txn.entryId,
-                'CID': txn.CID,
-                'amount': txn.amount,
-                'error': error_msg
-            })
-            logger.error(f'❌ Exception posting {txn.entryId}: {e}')
-
-            log_audit(
-                'POST_PAYMENT',
-                'EXCEPTION',
-                error_msg,
-                txn.entryId
-            )
+        # Try to post payment directly (reactive approach - only check for lead if it fails)
+        _post_payment_with_lead_conversion(txn, payload, success_count, failed_count, total_amount, failed_transactions)
 
     return {
-        'success_count': success_count,
-        'failed_count': failed_count,
-        'duplicate_count': duplicate_count,
-        'total_amount': total_amount,
+        'success_count': success_count[0],
+        'failed_count': failed_count[0],
+        'duplicate_count': duplicate_count[0],
+        'total_amount': total_amount[0],
         'failed_transactions': failed_transactions
     }
 
