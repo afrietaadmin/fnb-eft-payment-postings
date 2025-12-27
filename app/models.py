@@ -1,13 +1,13 @@
 from app import db
 from datetime import datetime
-from sqlalchemy import Index
+from sqlalchemy import Index, UniqueConstraint
 from flask_login import UserMixin
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
 
     id = db.Column(db.Integer, primary_key=True)
-    entryId = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    entryId = db.Column(db.String(255), nullable=False, index=True)
     account = db.Column(db.String(50), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     valueDate = db.Column(db.String(10), nullable=True)
@@ -31,6 +31,7 @@ class Transaction(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     __table_args__ = (
+        UniqueConstraint('entryId', 'account', name='uq_entry_per_account'),
         Index('idx_timestamp_posted', 'timestamp', 'posted'),
         Index('idx_cid_posted', 'CID', 'posted'),
     )

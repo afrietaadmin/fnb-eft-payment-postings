@@ -103,10 +103,10 @@ def filter_and_store_transactions(entries, account_number):
             if any(term in remittance_info.lower() for term in excluded_terms_lower) or any(term in reference.lower() for term in excluded_terms_lower):
                 continue
 
-            # Check for duplicate by entryId
-            existing = Transaction.query.filter_by(entryId=entryId).first()
+            # Check for duplicate by entryId + account (entry IDs can repeat across accounts)
+            existing = Transaction.query.filter_by(entryId=entryId, account=account_number).first()
             if existing:
-                logger.debug(f'Transaction {entryId} already exists (by entryId), skipping')
+                logger.debug(f'Transaction {entryId} already exists in account {account_number}, skipping')
                 continue
 
             value_date = entry.get('valueDate', {}).get('Date', '')
