@@ -112,6 +112,7 @@ def add_failed_transaction(entryId, reason, error_code=None):
         logging.error(f"Failed to add failed transaction: {e}")
 
 def resolve_failed_transaction(entryId, manual_cid=None):
+    import re
     try:
         failed = FailedTransaction.query.filter_by(entryId=entryId).first()
         if failed:
@@ -121,12 +122,24 @@ def resolve_failed_transaction(entryId, manual_cid=None):
             failed.resolved_at = datetime.utcnow()
             db.session.commit()
 
-            txn = Transaction.query.filter_by(entryId=entryId).first()
+            # Handle multiple transactions with same entryId (cross-account duplicates)
+            all_txns = Transaction.query.filter_by(entryId=entryId).all()
+            txn = None
+            if len(all_txns) > 1:
+                # Multiple transactions - prefer the one with unallocated CID
+                txn = next((t for t in all_txns if t.CID == 'unallocated'), all_txns[0])
+            else:
+                txn = all_txns[0] if all_txns else None
+
             if txn and manual_cid:
-                log_audit(entryId, 'CID_UPDATE', 'CID', txn.CID, manual_cid, 'web_ui')
-                txn.CID = manual_cid
-                txn.status = 'pending_repost'
-                db.session.commit()
+                # Extract numeric portion from CID (handle both "123" and "CID123" formats)
+                cid_match = re.search(r'\d+', str(manual_cid).strip())
+                if cid_match:
+                    extracted_cid = cid_match.group()
+                    log_audit(entryId, 'CID_UPDATE', 'CID', txn.CID, extracted_cid, 'web_ui')
+                    txn.CID = extracted_cid
+                    txn.status = 'pending_repost'
+                    db.session.commit()
     except Exception as e:
         logging.error(f"Failed to resolve failed transaction: {e}")
 

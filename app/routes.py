@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
 from flask_login import login_required, current_user
 from app import db, csrf
-from app.models import Transaction, FailedTransaction, AuditLog, ExecutionLog, UISPPayment
+from app.models import Transaction, FailedTransaction, AuditLog, ExecutionLog, UISPPayment, Service
 from app.utils import resolve_failed_transaction, log_audit, log_user_activity
+from app.auth import admin_required
 from app.config import Config
 from app.uisp_analyzer import (
     fetch_uisp_payments, store_uisp_payments,
@@ -35,15 +36,75 @@ def index():
 @main_bp.route('/transactions', methods=['GET'])
 @login_required
 def list_transactions():
+    # Get query parameters
     page = request.args.get('page', 1, type=int)
-    status = request.args.get('status', 'all')
+    search = request.args.get('search', '').strip()
+    date_from = request.args.get('date_from', '')
+    date_to = request.args.get('date_to', '')
 
+    # Build base query
     query = Transaction.query
-    if status != 'all':
-        query = query.filter_by(posted=status)
 
-    transactions = query.order_by(Transaction.timestamp.desc()).paginate(page=page, per_page=20)
-    return render_template('transactions.html', transactions=transactions, status=status)
+    # Apply date range filter (if provided)
+    if date_from:
+        query = query.filter(Transaction.valueDate >= date_from)
+    if date_to:
+        query = query.filter(Transaction.valueDate <= date_to)
+
+    # Apply search filter (fuzzy search on description + reference)
+    if search:
+        search_pattern = f'%{search}%'
+        query = query.filter(
+            db.or_(
+                Transaction.original_remittance_info.like(search_pattern),
+                Transaction.original_reference.like(search_pattern),
+                Transaction.remittance_info.like(search_pattern),
+                Transaction.reference.like(search_pattern),
+                Transaction.entryId.like(search_pattern),
+                Transaction.account.like(search_pattern)
+            )
+        )
+
+    # Order by date descending (newest first)
+    query = query.order_by(Transaction.valueDate.desc(), Transaction.timestamp.desc())
+
+    # Paginate results (100 per page for analysis work)
+    transactions = query.paginate(page=page, per_page=100, error_out=False)
+
+    # Calculate summary stats for the filtered results
+    total_amount = 0
+    if transactions.items:
+        result = db.session.query(db.func.sum(Transaction.amount))
+
+        # Apply same filters as main query
+        if date_from:
+            result = result.filter(Transaction.valueDate >= date_from)
+        if date_to:
+            result = result.filter(Transaction.valueDate <= date_to)
+
+        if search:
+            search_pattern = f'%{search}%'
+            result = result.filter(
+                db.or_(
+                    Transaction.original_remittance_info.like(search_pattern),
+                    Transaction.original_reference.like(search_pattern),
+                    Transaction.remittance_info.like(search_pattern),
+                    Transaction.reference.like(search_pattern),
+                    Transaction.entryId.like(search_pattern),
+                    Transaction.account.like(search_pattern)
+                )
+            )
+
+        total_amount = result.scalar() or 0
+
+    return render_template(
+        'transactions.html',
+        transactions=transactions,
+        search=search,
+        date_from=date_from,
+        date_to=date_to,
+        total_amount=total_amount
+    )
 
 @main_bp.route('/failed', methods=['GET'])
 @login_required
@@ -61,9 +122,20 @@ def failed_transactions():
     # Combine both lists
     data = []
 
+    # Keep track of entry IDs that have failed records
+    failed_entry_ids = {f.entryId for f in failed_docs}
+
     # Add failed transactions
     for f in failed_docs:
-        txn = Transaction.query.filter_by(entryId=f.entryId).first()
+        # If there are multiple transactions with same entryId, get the correct one
+        all_txns = Transaction.query.filter_by(entryId=f.entryId).all()
+        txn = None
+        if len(all_txns) > 1:
+            # Multiple transactions - prefer the one with unallocated CID
+            txn = next((t for t in all_txns if t.CID == 'unallocated'), all_txns[0])
+        else:
+            txn = all_txns[0] if all_txns else None
+
         if txn:
             data.append({
                 'failed': f,
@@ -72,14 +144,16 @@ def failed_transactions():
                 'is_duplicate': f.error_code == 'DUPLICATE'
             })
 
-    # Add unallocated transactions
+    # Add unallocated transactions (but exclude those already in failed_transactions)
     for txn in unallocated:
-        data.append({
-            'failed': None,
-            'transaction': txn,
-            'type': 'unallocated',
-            'is_duplicate': False
-        })
+        # Skip if this entry ID already has a failed record
+        if txn.entryId not in failed_entry_ids:
+            data.append({
+                'failed': None,
+                'transaction': txn,
+                'type': 'unallocated',
+                'is_duplicate': False
+            })
 
     # Paginate manually
     total = len(data)
@@ -117,8 +191,32 @@ def failed_transactions():
 @main_bp.route('/api/failed/<entry_id>', methods=['GET'])
 @login_required
 def get_failed_transaction(entry_id):
-    txn = Transaction.query.filter_by(entryId=entry_id).first()
-    failed = FailedTransaction.query.filter_by(entryId=entry_id).first()
+    # If there are multiple failed transaction records for same entryId,
+    # prefer the unresolved one or the one with BUG_ENTRY_ID_CONFLICT
+    all_failed = FailedTransaction.query.filter_by(entryId=entry_id).all()
+
+    failed = None
+    if all_failed:
+        # Prefer unresolved records
+        failed = next((f for f in all_failed if not f.resolved), None)
+        if not failed:
+            # Prefer bug explanation records
+            failed = next((f for f in all_failed if 'BUG_ENTRY_ID_CONFLICT' in f.error_code), None)
+        if not failed:
+            # Fall back to first one
+            failed = all_failed[0]
+
+    # If there are multiple transactions with same entryId (cross-account duplicates),
+    # we need to find the one in failed_transactions or the one with unallocated CID
+    all_txns = Transaction.query.filter_by(entryId=entry_id).all()
+
+    txn = None
+    if len(all_txns) > 1 and failed:
+        # Multiple transactions - find the one that's in failed_transactions (likely unallocated)
+        txn = next((t for t in all_txns if t.CID == 'unallocated'), all_txns[0])
+    else:
+        # Single transaction or no failed record
+        txn = all_txns[0] if all_txns else None
 
     if not txn:
         return jsonify({'error': 'Not found'}), 404
@@ -132,7 +230,9 @@ def get_failed_transaction(entry_id):
         'remittance_info': txn.remittance_info,
         'current_cid': txn.CID,
         'reason': failed.reason if failed else None,
-        'is_duplicate': is_duplicate
+        'is_duplicate': is_duplicate,
+        'account': txn.account,
+        'txn_id': txn.id
     })
 
 @main_bp.route('/update_cid/<entry_id>', methods=['POST'])
@@ -140,22 +240,39 @@ def get_failed_transaction(entry_id):
 @csrf.exempt
 def update_cid(entry_id):
     """Update CID for a transaction and optionally post it"""
-    cid = request.form.get('cid', '').strip()
+    import re
+    cid_input = request.form.get('cid', '').strip()
     note = request.form.get('note', '').strip()
     post_now = request.form.get('post_now') == 'yes'
     mark_as_posted = request.form.get('mark_as_posted') == 'yes'
 
-    if not cid:
+    if not cid_input:
         return jsonify({'error': 'CID required'}), 400
 
     try:
-        txn = Transaction.query.filter_by(entryId=entry_id).first()
+        # If there are multiple transactions with same entryId, get the correct one
+        all_txns = Transaction.query.filter_by(entryId=entry_id).all()
+        failed = FailedTransaction.query.filter_by(entryId=entry_id).first()
+
+        txn = None
+        if len(all_txns) > 1 and failed:
+            # Multiple transactions - find the one with unallocated CID (the one being edited)
+            txn = next((t for t in all_txns if t.CID == 'unallocated'), all_txns[0])
+        else:
+            txn = all_txns[0] if all_txns else None
+
         if not txn:
             return jsonify({'error': 'Transaction not found'}), 404
 
-        # Update CID and note (strip any whitespace from CID)
+        # Extract numeric portion from CID (handle both "123" and "CID123" formats)
+        cid_match = re.search(r'\d+', cid_input)
+        if not cid_match:
+            return jsonify({'error': 'CID must contain numbers'}), 400
+        cid = cid_match.group()
+
+        # Update CID and note (store only the numeric portion)
         old_cid = txn.CID
-        txn.CID = str(cid).strip()
+        txn.CID = cid
         if note:
             txn.note = note
 
@@ -207,7 +324,17 @@ def resolve_transaction(entry_id):
 
     try:
         resolve_failed_transaction(entry_id, manual_cid)
-        txn = Transaction.query.filter_by(entryId=entry_id).first()
+
+        # If there are multiple transactions with same entryId, get the correct one
+        all_txns = Transaction.query.filter_by(entryId=entry_id).all()
+        failed = FailedTransaction.query.filter_by(entryId=entry_id).first()
+
+        txn = None
+        if len(all_txns) > 1 and failed:
+            # Multiple transactions - find the one with unallocated CID (the one being edited)
+            txn = next((t for t in all_txns if t.CID == 'unallocated'), all_txns[0])
+        else:
+            txn = all_txns[0] if all_txns else None
 
         # Attempt to post immediately
         post_payment_uisp(txn)
@@ -221,8 +348,14 @@ def post_payment_uisp(txn):
     """Post a transaction to UISP (GUI always posts, ignores TEST_MODE)"""
     import json
     import os
+    import re
     try:
-        uisp_cid = int(txn.CID.strip())
+        # Extract numeric portion from CID (handle both "123" and "CID123" formats)
+        cid_str = str(txn.CID).strip()
+        cid_match = re.search(r'\d+', cid_str)
+        if not cid_match:
+            raise ValueError(f"Invalid CID format: {cid_str} - must contain numbers")
+        uisp_cid = int(cid_match.group())
         amount = float(txn.amount)
         entryId = txn.entryId
 
@@ -284,7 +417,7 @@ def audit_log(entry_id):
     return render_template('audit.html', logs=logs, entry_id=entry_id)
 
 @main_bp.route('/execution-logs', methods=['GET'])
-@login_required
+@admin_required
 def execution_logs():
     page = request.args.get('page', 1, type=int)
     logs = ExecutionLog.query.order_by(ExecutionLog.timestamp.desc()).paginate(page=page, per_page=50)
@@ -321,7 +454,17 @@ def bulk_update_transactions():
             continue
 
         try:
-            txn = Transaction.query.filter_by(entryId=entry_id).first()
+            # If there are multiple transactions with same entryId, get the correct one
+            all_txns = Transaction.query.filter_by(entryId=entry_id).all()
+            failed = FailedTransaction.query.filter_by(entryId=entry_id).first()
+
+            txn = None
+            if len(all_txns) > 1 and failed:
+                # Multiple transactions - find the one with unallocated CID (the one being edited)
+                txn = next((t for t in all_txns if t.CID == 'unallocated'), all_txns[0])
+            else:
+                txn = all_txns[0] if all_txns else None
+
             if not txn:
                 errors.append(f'{entry_id}: Transaction not found')
                 continue
@@ -333,7 +476,6 @@ def bulk_update_transactions():
                 txn.note = note
 
             # Remove from FailedTransaction if it exists
-            failed = FailedTransaction.query.filter_by(entryId=entry_id).first()
             if failed:
                 failed.resolved = True
                 failed.resolved_at = datetime.now(timezone.utc)
@@ -592,6 +734,9 @@ def quotes():
 
     handler = UISPSuspensionHandler()
 
+    # Get filter parameter for showing only active services
+    filter_type = request.args.get('filter', 'all')
+
     try:
         # Fetch open quotes (status=0)
         quotes_response = handler._make_request('GET', 'v1.0/quotes', params={'statuses[]': '0'})
@@ -604,8 +749,8 @@ def quotes():
         else:
             quotes_list = []
 
-        # Fetch all clients to match with quotes
-        clients_response = handler._make_request('GET', 'v1.0/clients')
+        # Fetch all non-archived clients to match with quotes
+        clients_response = handler._make_request('GET', 'v1.0/clients', params={'isArchived': '0'})
 
         if isinstance(clients_response, dict) and 'data' in clients_response:
             clients_list = clients_response['data']
@@ -617,8 +762,19 @@ def quotes():
         # Create a map of client IDs to client data (exclude archived)
         client_map = {}
         for client in clients_list:
-            if not client.get('isArchived', False):
+            is_archived = client.get('isArchived', False)
+            # Check if not archived (0, False, or falsy values mean not archived)
+            if not is_archived or is_archived == 0:
                 client_map[client.get('id')] = client
+
+        # Fetch active service IDs if filtering by active services
+        active_service_ids_set = None
+        if filter_type == 'active':
+            active_service_ids = db.session.query(Service.uisp_service_id)\
+                .filter(Service.status == 'active')\
+                .all()
+            active_service_ids_set = {sid[0] for sid in active_service_ids}
+            logger.info(f"Found {len(active_service_ids_set)} active services for filtering")
 
         # Enrich quotes with client data
         enriched_quotes = []
@@ -628,6 +784,14 @@ def quotes():
 
             # Only include quotes from non-archived customers
             if client:
+                service_id = quote.get('serviceId')
+
+                # Apply active service filter if enabled
+                if filter_type == 'active':
+                    # Skip if no service_id or service not active
+                    if not service_id or service_id not in active_service_ids_set:
+                        continue
+
                 enriched_quotes.append({
                     'quote': quote,
                     'client': client,
@@ -654,11 +818,11 @@ def quotes():
 
         logger.info(f"Fetched {len(enriched_quotes)} open quotes for non-archived customers")
 
-        return render_template('quotes.html', quotes=enriched_quotes)
+        return render_template('quotes.html', quotes=enriched_quotes, filter_type=filter_type)
 
     except Exception as e:
         logger.error(f"Error fetching quotes: {str(e)}")
-        return render_template('quotes.html', quotes=[], error=str(e))
+        return render_template('quotes.html', quotes=[], error=str(e), filter_type=filter_type)
 
 
 @main_bp.route('/api/health', methods=['GET'])
