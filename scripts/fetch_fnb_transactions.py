@@ -111,17 +111,6 @@ def filter_and_store_transactions(entries, account_number):
 
             value_date = entry.get('valueDate', {}).get('Date', '')
 
-            # IMPORTANT: Also check for duplicates by amount + valueDate + account
-            # FNB API sometimes returns the same payment with different entryIds
-            duplicate_by_data = Transaction.query.filter_by(
-                account=account_number,
-                amount=amount,
-                valueDate=value_date
-            ).first()
-
-            if duplicate_by_data:
-                logger.info(f'Duplicate transaction detected: Amount R{amount:.2f}, Date {value_date}, Account {account_number} - EntryId {entryId} differs from existing {duplicate_by_data.entryId}, skipping')
-                continue
             txn = Transaction(
                 entryId=entryId,
                 account=account_number,
