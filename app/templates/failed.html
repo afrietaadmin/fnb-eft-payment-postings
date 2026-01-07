@@ -20,6 +20,7 @@
                 <th style="width: 40px;"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
                 <th>Entry ID</th>
                 <th>Type</th>
+                <th style="width: 90px;">Date</th>
                 <th>Amount</th>
                 <th>Current CID</th>
                 <th>Reference</th>
@@ -40,6 +41,7 @@
                         <span class="badge badge-danger">Failed</span>
                     {% endif %}
                 </td>
+                <td><small>{{ item.transaction.valueDate or '-' }}</small></td>
                 <td><strong>ZAR {{ "%.2f"|format(item.transaction.amount) }}</strong></td>
                 <td><span class="badge badge-info">{{ item.transaction.CID }}</span></td>
                 <td>{{ item.transaction.reference or '-' }}</td>
@@ -104,7 +106,7 @@
                 <button type="button" class="btn-close" onclick="closeResolveModal()"></button>
             </div>
             <form id="resolveForm">
-                <div class="modal-body">
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                     <div class="form-group">
                         <label>Entry ID:</label>
                         <input id="modalEntryId" type="text" class="form-control" disabled>
@@ -190,7 +192,7 @@
                 <button type="button" class="btn-close" onclick="closeBulkEditModal()"></button>
             </div>
             <form id="bulkEditForm">
-                <div class="modal-body">
+                <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                     <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-lg);"><span id="bulkSelectedCount">0</span> transaction(s) selected</p>
 
                     <div id="bulkTransactionsList" class="card mb-lg" style="max-height: 300px; overflow-y: auto;">
