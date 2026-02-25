@@ -20,7 +20,7 @@ class Config:
     UISP_PAYMENT_METHOD_ID = os.getenv('UISP_PAYMENT_METHOD_ID', 'd8c1eae9-d41d-479f-aeaf-38497975d7b3')
     UISP_USER_ID = int(os.getenv('UISP_USER_ID', '1000'))
 
-    ***REMOVED***
+    # Telegram
     TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
     TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
     TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
