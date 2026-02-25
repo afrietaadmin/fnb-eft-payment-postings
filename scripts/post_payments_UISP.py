@@ -27,19 +27,19 @@ def build_uisp_payload(txn):
         amount = float(txn.amount)
         entryId = txn.entryId
 
-        formatted_note = f"{txn.note or ''} | TXN: {entryId}".strip(' |')
+        formatted_note = f"{txn.note or ''} | TXN ID: {entryId}".strip(' |')
         provider_payment_time = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S%z')
 
         payload = {
             'clientId': uisp_cid,
-            'methodId': 'd8c1eae9-d41d-479f-aeaf-38497975d7b3',
+            'methodId': Config.UISP_PAYMENT_METHOD_ID,
             'currencyCode': 'ZAR',
             'applyToInvoicesAutomatically': True,
             'providerPaymentId': entryId,
             'providerPaymentTime': provider_payment_time,
             'providerName': 'FNB-EFT',
             'amount': amount,
-            'userId': 1000,
+            'userId': Config.UISP_USER_ID,
             'note': formatted_note
         }
         return payload
@@ -126,17 +126,15 @@ def dump_uisp_requests_csv(transactions):
 
 def check_duplicate_payment(txn):
     """
-    Check if this CID already has a posted payment with same amount in UISP within last 15 days.
+    Check if this CID already has a posted payment with same amount in UISP within configured days.
     Returns dict with duplicate info if found, None otherwise.
     """
     if not txn.CID or txn.CID == 'unallocated':
         return None
 
     try:
-        UISP_DUPLICATE_DAYS = 15  # Always check last 15 days in UISP
-
         today = datetime.now(timezone.utc)
-        cutoff = today - timedelta(days=UISP_DUPLICATE_DAYS)
+        cutoff = today - timedelta(days=Config.UISP_DUPLICATE_CHECK_DAYS)
         date_from = cutoff.strftime('%Y-%m-%d')
         date_to = today.strftime('%Y-%m-%d')
 
@@ -385,38 +383,49 @@ def post_to_uisp(transactions):
             logger.warning(f'Skipping {txn.entryId}: no valid payload')
             continue
 
-        # Check for duplicate payment in UISP (same CID + same amount within last 15 days)
-        duplicate = check_duplicate_payment(txn)
-        if duplicate:
-            duplicate_count[0] += 1
-            reason = f"Duplicate payment found in UISP: CID{txn.CID} already paid R{duplicate['amount']:.2f} on {duplicate['created_date'].strftime('%Y-%m-%d')} ({duplicate['days_ago']} days ago). Provider: {duplicate['provider']}, Method: {duplicate['method']}. FLAGGED FOR MANUAL REVIEW."
+        # Check if this entryId appears in multiple accounts (cross-account scenario)
+        # If so, skip duplicate check - same entryId in different accounts is legitimate
+        all_txns_same_entry = Transaction.query.filter_by(entryId=txn.entryId).all()
+        accounts = {t.account for t in all_txns_same_entry}
+        is_cross_account = len(accounts) > 1
 
-            # Create FailedTransaction record for manual review
-            existing_failed = FailedTransaction.query.filter_by(entryId=txn.entryId).first()
-            if not existing_failed:
-                failed_txn = FailedTransaction(
-                    entryId=txn.entryId,
-                    reason=reason,
-                    error_code='DUPLICATE_UISP_MANUAL_REVIEW',
-                    resolved=False
-                )
-                db.session.add(failed_txn)
+        duplicate = None
+        if not is_cross_account:
+            # Only check for duplicates if not a cross-account scenario
+            # Check for duplicate payment in UISP (same CID + same amount within configured days)
+            duplicate = check_duplicate_payment(txn)
+            if duplicate:
+                duplicate_count[0] += 1
+                reason = f"Duplicate payment found in UISP: CID{txn.CID} already paid R{duplicate['amount']:.2f} on {duplicate['created_date'].strftime('%Y-%m-%d')} ({duplicate['days_ago']} days ago). Provider: {duplicate['provider']}, Method: {duplicate['method']}. FLAGGED FOR MANUAL REVIEW."
+
+                # Create FailedTransaction record for manual review
+                existing_failed = FailedTransaction.query.filter_by(entryId=txn.entryId).first()
+                if not existing_failed:
+                    failed_txn = FailedTransaction(
+                        entryId=txn.entryId,
+                        reason=reason,
+                        error_code='DUPLICATE_UISP_MANUAL_REVIEW',
+                        resolved=False
+                    )
+                    db.session.add(failed_txn)
+                    db.session.commit()
+
+                # Update transaction status for manual review
+                txn.status = 'duplicate_manual_review'
                 db.session.commit()
 
-            # Update transaction status for manual review
-            txn.status = 'duplicate_manual_review'
-            db.session.commit()
+                logger.warning(f'⚠️  Duplicate in UISP: {txn.entryId} - {reason}')
+                log_audit('POST_PAYMENT', 'DUPLICATE_UISP_MANUAL_REVIEW', reason, txn.entryId)
 
-            logger.warning(f'⚠️  Duplicate in UISP: {txn.entryId} - {reason}')
-            log_audit('POST_PAYMENT', 'DUPLICATE_UISP_MANUAL_REVIEW', reason, txn.entryId)
-
-            failed_transactions.append({
-                'entryId': txn.entryId,
-                'CID': txn.CID,
-                'amount': txn.amount,
-                'error': reason
-            })
-            continue
+                failed_transactions.append({
+                    'entryId': txn.entryId,
+                    'CID': txn.CID,
+                    'amount': txn.amount,
+                    'error': reason
+                })
+                continue
+        else:
+            logger.info(f'ℹ️  Cross-account transaction detected: {txn.entryId} appears in multiple accounts - skipping duplicate check')
 
         # Try to post payment directly (reactive approach - only check for lead if it fails)
         _post_payment_with_lead_conversion(txn, payload, success_count, failed_count, total_amount, failed_transactions)
@@ -653,7 +662,8 @@ def main():
             unposted = Transaction.query.filter(
                 Transaction.posted == 'no',
                 Transaction.CID != 'unallocated',
-                Transaction.valueDate >= cutoff_date
+                Transaction.valueDate >= cutoff_date,
+                Transaction.status != 'conflicting_data'  # Skip conflicting entries pending manual review
             ).all()
 
             if not unposted:

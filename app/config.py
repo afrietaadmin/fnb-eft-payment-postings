@@ -17,6 +17,8 @@ class Config:
     UISP_BASE_URL = os.getenv('UISP_BASE_URL')
     UISP_API_KEY = os.getenv('UISP_API_KEY')
     UISP_AUTHORIZATION = os.getenv('UISP_AUTHORIZATION', 'X-Auth-App-Key')
+    UISP_PAYMENT_METHOD_ID = os.getenv('UISP_PAYMENT_METHOD_ID', 'd8c1eae9-d41d-479f-aeaf-38497975d7b3')
+    UISP_USER_ID = int(os.getenv('UISP_USER_ID', '1000'))
 
     ***REMOVED***
     TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
@@ -33,13 +35,18 @@ class Config:
     LOG_FILE = os.getenv('LOG_FILE', '/var/log/fnb_postings.log')
     TELEGRAM_MESSAGES_FILE = os.getenv('TELEGRAM_MESSAGES_FILE', '/srv/applications/fnb_EFT_payment_postings/telegram_messages.json')
     BASE_PATH = '/srv/applications/fnb_EFT_payment_postings'
-    SECRET_KEY = os.getenv('SECRET_KEY', 'default-insecure-key')
+    SECRET_KEY = os.getenv('SECRET_KEY')
     USERS = os.getenv('USERS', '')
     TEST_MODE = os.getenv('TEST_MODE', 'true').lower() == 'true'
+    WEB_UI_URL = os.getenv('WEB_UI_URL', 'https://payments.afrieta.com')
 
     # Filtering
-    EXCLUDED_TERMS = {'FNB APP TRANSFER FROM SUBSCRIPTIONS', 'SUBSCRIPTIONS', 'SUBSCRIPTION', 'SHAHIN'}
+    EXCLUDED_TERMS = {'FNB APP TRANSFER FROM SUBSCRIPTIONS', 'SUBSCRIPTIONS', 'SUBSCRIPTION', 'SHAHIN', 'STITCH'}
     FETCH_DAYS_BACK = int(os.getenv('FETCH_DAYS_BACK', '5'))
     POST_CUTOFF_DAYS = int(os.getenv('POST_CUTOFF_DAYS', '6'))
     DUPLICATE_DETECTION_DAYS = int(os.getenv('DUPLICATE_DETECTION_DAYS', '6'))
     DUPLICATE_WINDOW_DAYS = int(os.getenv('DUPLICATE_WINDOW_DAYS', '6'))
+    UISP_DUPLICATE_CHECK_DAYS = int(os.getenv('UISP_DUPLICATE_CHECK_DAYS', '15'))
+
+    # API Query
+    MAX_API_QUERY_DAYS = 92  # 3 months for FNB API queries

@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash
 from flask_login import login_required, current_user
 from app import db, csrf
-from app.models import Transaction, FailedTransaction, AuditLog, ExecutionLog, UISPPayment, Service
-from app.utils import resolve_failed_transaction, log_audit, log_user_activity
+from app.models import Transaction, FailedTransaction, AuditLog, ExecutionLog, UISPPayment, Service, Customer, CachedPayment
+from app.utils import resolve_failed_transaction, log_audit, log_user_activity, fetch_fnb_transactions_by_period, get_suggested_cid
 from app.auth import admin_required
 from app.config import Config
 from app.uisp_analyzer import (
@@ -106,6 +106,110 @@ def list_transactions():
         total_amount=total_amount
     )
 
+@main_bp.route('/transactions/query_api', methods=['POST'])
+@login_required
+def query_api_transactions():
+    """Query FNB API directly for transactions matching CID and/or search text"""
+    try:
+        # Get form data
+        from_date = request.form.get('api_from_date', '').strip()
+        to_date = request.form.get('api_to_date', '').strip()
+        cid = request.form.get('api_cid', '').strip()
+        search_text = request.form.get('api_search_text', '').strip()
+
+        # Validate required date fields
+        if not from_date or not to_date:
+            flash('From date and to date are required', 'danger')
+            return redirect(url_for('main.list_transactions'))
+
+        # Normalize CID format (remove "CID" prefix if present)
+        if cid:
+            import re
+            cid_match = re.search(r'\d+', cid)
+            if cid_match:
+                cid = cid_match.group()
+            else:
+                flash('Invalid CID format. Please provide a numeric CID (e.g., 818 or CID818)', 'danger')
+                return redirect(url_for('main.list_transactions'))
+
+        # Validate at least one search criterion
+        if not cid and not search_text:
+            flash('Please provide at least one search criterion (CID or search text)', 'danger')
+            return redirect(url_for('main.list_transactions'))
+
+        # Fetch transactions from FNB API
+        try:
+            matched_entries = fetch_fnb_transactions_by_period(from_date, to_date, cid, search_text)
+        except ValueError as e:
+            flash(f'Invalid date range: {str(e)}', 'danger')
+            return redirect(url_for('main.list_transactions'))
+        except Exception as e:
+            error_msg = str(e)
+            if 'timed out' in error_msg.lower():
+                flash('FNB API request timed out. Please try again.', 'danger')
+            elif 'authenticate' in error_msg.lower():
+                flash('Failed to authenticate with FNB API. Please check configuration.', 'danger')
+            else:
+                flash(f'Error querying FNB API: {error_msg}', 'danger')
+            return redirect(url_for('main.list_transactions'))
+
+        # Convert API entries to transaction-like format for template
+        api_results = []
+        for entry in matched_entries:
+            try:
+                # Extract transaction details from nested FNB API structure
+                entry_details = entry.get('entryDetails', {})
+                txn_details = entry_details.get('transactionDetails', {})
+                remittance = txn_details.get('remittanceInfo', {}).get('unstructured', '')
+                reference = txn_details.get('reference', {}).get('endToEndId', '')
+                amount_data = entry.get('amount', {}).get('amount', 0)
+                date_data = entry.get('valueDate', {}).get('Date', '')
+                entry_id = entry.get('entryId', '')
+
+                # Get account number that was added during API fetch
+                account = entry.get('account_number', 'Unknown')
+
+                api_results.append({
+                    'entryId': entry_id,
+                    'amount': float(amount_data) if amount_data else 0,
+                    'valueDate': date_data,
+                    'remittance_info': remittance,
+                    'reference': reference,
+                    'account': account,
+                    'CID': cid if cid else 'unallocated',
+                    'posted': 'no',
+                    'status': 'api_result',
+                    'source': 'FNB API'
+                })
+            except Exception as e:
+                logger.error(f"Error formatting API transaction: {e}")
+                continue
+
+        # Prepare context for template
+        query_params = {
+            'cid': cid,
+            'search_text': search_text,
+            'from_date': from_date,
+            'to_date': to_date
+        }
+
+        return render_template(
+            'transactions.html',
+            api_results=api_results,
+            query_params=query_params,
+            result_count=len(api_results),
+            transactions=None,
+            search='',
+            date_from='',
+            date_to='',
+            total_amount=0
+        )
+
+    except Exception as e:
+        logger.error(f"Unexpected error in query_api_transactions: {e}")
+        flash('An unexpected error occurred. Please try again.', 'danger')
+        return redirect(url_for('main.list_transactions'))
+
 @main_bp.route('/failed', methods=['GET'])
 @login_required
 def failed_transactions():
@@ -208,12 +312,17 @@ def get_failed_transaction(entry_id):
 
     # If there are multiple transactions with same entryId (cross-account duplicates),
     # we need to find the one in failed_transactions or the one with unallocated CID
-    all_txns = Transaction.query.filter_by(entryId=entry_id).all()
+    # Order by CID (unallocated first) then by ID for consistent selection
+    all_txns = Transaction.query.filter_by(entryId=entry_id).order_by(
+        (Transaction.CID == 'unallocated').desc(),
+        Transaction.id.asc()
+    ).all()
 
     txn = None
     if len(all_txns) > 1 and failed:
-        # Multiple transactions - find the one that's in failed_transactions (likely unallocated)
-        txn = next((t for t in all_txns if t.CID == 'unallocated'), all_txns[0])
+        # Multiple transactions - always use the first one after ordering
+        # (unallocated transactions come first)
+        txn = all_txns[0]
     else:
         # Single transaction or no failed record
         txn = all_txns[0] if all_txns else None
@@ -223,12 +332,16 @@ def get_failed_transaction(entry_id):
 
     is_duplicate = failed.error_code == 'DUPLICATE' if failed else False
 
+    # Get suggested CID from EFT mapping
+    suggested_cid = get_suggested_cid(txn)
+
     return jsonify({
         'entryId': txn.entryId,
         'amount': txn.amount,
         'reference': txn.reference,
         'remittance_info': txn.remittance_info,
         'current_cid': txn.CID,
+        'suggested_cid': suggested_cid,
         'reason': failed.reason if failed else None,
         'is_duplicate': is_duplicate,
         'account': txn.account,
@@ -251,13 +364,18 @@ def update_cid(entry_id):
 
     try:
         # If there are multiple transactions with same entryId, get the correct one
-        all_txns = Transaction.query.filter_by(entryId=entry_id).all()
+        # Order by CID (unallocated first) then by ID for consistent selection
+        all_txns = Transaction.query.filter_by(entryId=entry_id).order_by(
+            (Transaction.CID == 'unallocated').desc(),
+            Transaction.id.asc()
+        ).all()
         failed = FailedTransaction.query.filter_by(entryId=entry_id).first()
 
         txn = None
         if len(all_txns) > 1 and failed:
-            # Multiple transactions - find the one with unallocated CID (the one being edited)
-            txn = next((t for t in all_txns if t.CID == 'unallocated'), all_txns[0])
+            # Multiple transactions - always use the first one after ordering
+            # (unallocated transactions come first)
+            txn = all_txns[0]
         else:
             txn = all_txns[0] if all_txns else None
 
@@ -326,13 +444,18 @@ def resolve_transaction(entry_id):
         resolve_failed_transaction(entry_id, manual_cid)
 
         # If there are multiple transactions with same entryId, get the correct one
-        all_txns = Transaction.query.filter_by(entryId=entry_id).all()
+        # Order by CID (unallocated first) then by ID for consistent selection
+        all_txns = Transaction.query.filter_by(entryId=entry_id).order_by(
+            (Transaction.CID == 'unallocated').desc(),
+            Transaction.id.asc()
+        ).all()
         failed = FailedTransaction.query.filter_by(entryId=entry_id).first()
 
         txn = None
         if len(all_txns) > 1 and failed:
-            # Multiple transactions - find the one with unallocated CID (the one being edited)
-            txn = next((t for t in all_txns if t.CID == 'unallocated'), all_txns[0])
+            # Multiple transactions - always use the first one after ordering
+            # (unallocated transactions come first)
+            txn = all_txns[0]
         else:
             txn = all_txns[0] if all_txns else None
 
@@ -359,19 +482,19 @@ def post_payment_uisp(txn):
         amount = float(txn.amount)
         entryId = txn.entryId
 
-        formatted_note = f"{txn.note or ''} | TXN: {entryId}".strip(' |')
+        formatted_note = f"{txn.note or ''} | TXN ID: {entryId}".strip(' |')
         provider_payment_time = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S%z')
 
         payload = {
             'clientId': uisp_cid,
-            'methodId': 'd8c1eae9-d41d-479f-aeaf-38497975d7b3',
+            'methodId': Config.UISP_PAYMENT_METHOD_ID,
             'currencyCode': 'ZAR',
             'applyToInvoicesAutomatically': True,
             'providerPaymentId': entryId,
             'providerPaymentTime': provider_payment_time,
             'providerName': 'FNB-EFT',
             'amount': amount,
-            'userId': 1000,
+            'userId': Config.UISP_USER_ID,
             'note': formatted_note
         }
 
@@ -455,13 +578,18 @@ def bulk_update_transactions():
 
         try:
             # If there are multiple transactions with same entryId, get the correct one
-            all_txns = Transaction.query.filter_by(entryId=entry_id).all()
+            # Order by CID (unallocated first) then by ID for consistent selection
+            all_txns = Transaction.query.filter_by(entryId=entry_id).order_by(
+                (Transaction.CID == 'unallocated').desc(),
+                Transaction.id.asc()
+            ).all()
             failed = FailedTransaction.query.filter_by(entryId=entry_id).first()
 
             txn = None
             if len(all_txns) > 1 and failed:
-                # Multiple transactions - find the one with unallocated CID (the one being edited)
-                txn = next((t for t in all_txns if t.CID == 'unallocated'), all_txns[0])
+                # Multiple transactions - always use the first one after ordering
+                # (unallocated transactions come first)
+                txn = all_txns[0]
             else:
                 txn = all_txns[0] if all_txns else None
 
@@ -597,6 +725,69 @@ def get_customer_payments(cid):
         }), 504
     except Exception as e:
         logger.error(f'Error fetching payments for CID {cid}: {e}')
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+@main_bp.route('/api/customer_info/<cid>', methods=['GET'])
+@login_required
+def get_customer_info(cid):
+    """Fetch customer balance and last 2 payments"""
+    try:
+        # Extract numeric CID
+        numeric_cid = int(str(cid).replace('CID', '').strip())
+
+        # Get customer from local cache
+        customer = Customer.query.filter_by(uisp_client_id=numeric_cid).first()
+
+        if not customer:
+            return jsonify({
+                'status': 'not_found',
+                'message': f'Customer {numeric_cid} not found in system'
+            }), 404
+
+        # Get last 2 payments
+        last_payments = CachedPayment.query.filter_by(customer_id=customer.id)\
+            .order_by(CachedPayment.created_date.desc())\
+            .limit(2)\
+            .all()
+
+        payments_data = []
+        for payment in last_payments:
+            payments_data.append({
+                'amount': payment.amount,
+                'date': payment.created_date.strftime('%Y-%m-%d %H:%M') if payment.created_date else '',
+                'method': payment.method or 'N/A',
+                'note': payment.note or ''
+            })
+
+        result = {
+            'status': 'success',
+            'customer_id': numeric_cid,
+            'name': f"{customer.first_name or ''} {customer.last_name or ''}".strip() or 'N/A',
+            'email': customer.email or 'N/A',
+            'phone': customer.phone or 'N/A',
+            'account_balance': round(customer.account_balance, 2),
+            'account_outstanding': round(customer.account_outstanding, 2),
+            'account_credit': round(customer.account_credit, 2),
+            'is_active': customer.is_active,
+            'is_archived': customer.is_archived,
+            'is_vip': customer.is_vip,
+            'has_overdue_invoice': customer.has_overdue_invoice,
+            'last_2_payments': payments_data,
+            'cached_at': customer.cached_at.strftime('%Y-%m-%d %H:%M') if customer.cached_at else ''
+        }
+
+        return jsonify(result)
+
+    except ValueError:
+        return jsonify({
+            'status': 'error',
+            'message': 'Invalid CID format'
+        }), 400
+    except Exception as e:
+        logger.error(f'Error fetching customer info: {e}')
         return jsonify({
             'status': 'error',
             'message': str(e)

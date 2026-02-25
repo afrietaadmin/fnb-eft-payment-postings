@@ -11,14 +11,20 @@ from app import db
 from app.models import Customer, Service, Invoice, CachedPayment, PaymentPattern
 from app.config import Config
 
+# Suppress SSL warnings for self-signed certificates
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 logger = logging.getLogger(__name__)
 
 
 class UISPSuspensionHandler:
     """Handles UISP API interactions for suspension management."""
 
-    # Use base API URL without version - endpoints include their own version
-    BASE_URL = "https://uisp-ros1.afrieta.com/crm/api/"
+    # Derive base URL (without version) from config - endpoints include their own version
+    # e.g. https://host/crm/api/v1.0/ -> https://host/crm/api/
+    import re as _re
+    BASE_URL = _re.sub(r'v\d+\.\d+/?$', '', Config.UISP_BASE_URL or '') if Config.UISP_BASE_URL else ''
     API_KEY = Config.UISP_API_KEY
     CACHE_DURATION_HOURS = 24  # Cache customer data for 24 hours
     LOOKBACK_DAYS = 180  # Analyze last 6 months of payment history
@@ -34,9 +40,9 @@ class UISPSuspensionHandler:
         url = f"{self.BASE_URL}{endpoint}"
         try:
             if method == 'GET':
-                response = requests.get(url, headers=self.headers, params=params, timeout=30)
+                response = requests.get(url, headers=self.headers, params=params, timeout=30, verify=False)
             elif method == 'PATCH':
-                response = requests.patch(url, headers=self.headers, json=data, timeout=30)
+                response = requests.patch(url, headers=self.headers, json=data, timeout=30, verify=False)
             else:
                 raise ValueError(f"Unsupported method: {method}")
 
