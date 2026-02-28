@@ -3,35 +3,197 @@
 <div class="page-header">
     <div>
         <h1 class="page-title">Transactions</h1>
-        <p class="page-subtitle">All processed transactions</p>
+        <p class="page-subtitle">All processed transactions from the local database</p>
     </div>
 </div>
 
-<div class="page-actions mb-lg">
-    <a href="?status=all" class="btn {% if status == 'all' %}btn-primary{% else %}btn-secondary{% endif %}">All</a>
-    <a href="?status=yes" class="btn {% if status == 'yes' %}btn-success{% else %}btn-secondary{% endif %}">Posted</a>
-    <a href="?status=no" class="btn {% if status == 'no' %}btn-warning{% else %}btn-secondary{% endif %}">Pending</a>
+<!-- Search / Filter -->
+<div class="card mb-lg">
+    <div class="card-body">
+        <form method="GET" action="/transactions">
+            <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap; align-items: flex-end;">
+                <div style="flex: 2; min-width: 200px;">
+                    <label style="font-size: 0.8rem; color: var(--color-text-secondary);">Search</label>
+                    <input type="text" name="search" value="{{ search }}"
+                        placeholder="Entry ID, CID, reference, account..."
+                        class="form-control">
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; color: var(--color-text-secondary);">From</label>
+                    <input type="date" name="date_from" value="{{ date_from }}" class="form-control">
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; color: var(--color-text-secondary);">To</label>
+                    <input type="date" name="date_to" value="{{ date_to }}" class="form-control">
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    {% if search or date_from or date_to %}
+                    <a href="/transactions" class="btn btn-secondary" style="margin-left: var(--spacing-xs);">Clear</a>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- FNB API Direct Query -->
+<div class="card mb-lg" style="border-left: 4px solid var(--color-primary);">
+    <div class="card-body">
+        <h3 style="margin: 0 0 var(--spacing-xs) 0; color: var(--color-primary);">Search Bank Directly (Last 30 Days)</h3>
+        <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: var(--spacing-sm);">
+            Search the FNB API in real-time. Enter a CID number (e.g. <code>818</code>) or any text from the reference/remittance.
+            Searches the last 30 days by default — adjust dates as needed (max 3 months).
+        </p>
+        <form method="POST" action="/transactions/query_api">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap; align-items: flex-end;">
+                <div style="flex: 2; min-width: 220px;">
+                    <label style="font-size: 0.8rem; color: var(--color-text-secondary);">CID number or search text *</label>
+                    <input type="text" name="api_search_text" id="api_search_input" class="form-control"
+                        placeholder="e.g. 818, CID818, company name, reference..."
+                        value="{{ query_params.search_text if query_params else '' }}" autofocus>
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; color: var(--color-text-secondary);">From</label>
+                    <input type="date" name="api_from_date" id="api_from_date" class="form-control"
+                        value="{{ query_params.from_date if query_params else '' }}">
+                </div>
+                <div>
+                    <label style="font-size: 0.8rem; color: var(--color-text-secondary);">To</label>
+                    <input type="date" name="api_to_date" id="api_to_date" class="form-control"
+                        value="{{ query_params.to_date if query_params else '' }}">
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Search Bank</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+// Pre-fill date range with last 3 months if not already set (i.e. first load, not a result page)
+(function() {
+    var fromField = document.getElementById('api_from_date');
+    var toField = document.getElementById('api_to_date');
+    if (!fromField.value) {
+        var today = new Date();
+        var threeMonthsAgo = new Date(today);
+        threeMonthsAgo.setDate(today.getDate() - 30);
+        fromField.value = threeMonthsAgo.toISOString().slice(0, 10);
+    }
+    if (!toField.value) {
+        toField.value = new Date().toISOString().slice(0, 10);
+    }
+})();
+</script>
+
+<!-- API Query Results -->
+{% if api_results is defined and api_results is not none %}
+<div class="card mb-lg" style="border-left: 4px solid var(--color-success);">
+    <div class="card-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+            <h3 style="margin: 0; color: var(--color-success);">FNB API Results</h3>
+            <div>
+                <span class="badge badge-success">{{ result_count }} transactions found</span>
+                {% if query_params %}
+                <span style="font-size: 0.8rem; color: var(--color-text-secondary); margin-left: var(--spacing-sm);">
+                    {{ query_params.from_date }} to {{ query_params.to_date }}
+                    {% if query_params.cid %} | CID: {{ query_params.cid }}{% endif %}
+                    {% if query_params.search_text %} | "{{ query_params.search_text }}"{% endif %}
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if api_results %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Entry ID</th>
+                        <th>Amount</th>
+                        <th>Account</th>
+                        <th>CID</th>
+                        <th>Reference</th>
+                        <th>Remittance Info</th>
+                        <th>In DB?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in api_results %}
+                    {% set in_db = r.entryId and r.entryId in db_entry_ids %}
+                    <tr {% if not in_db %}style="background: rgba(255,193,7,0.08);"{% endif %}>
+                        <td>{{ r.valueDate or '-' }}</td>
+                        <td><code>{{ r.entryId }}</code></td>
+                        <td><strong style="color: var(--color-success);">ZAR {{ "%.2f"|format(r.amount) }}</strong></td>
+                        <td><code>{{ r.account }}</code></td>
+                        <td>
+                            {% if r.CID and r.CID != 'unallocated' %}
+                                <span class="badge badge-success">{{ r.CID }}</span>
+                            {% else %}
+                                <span class="badge badge-warning">unallocated</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ r.reference or '-' }}</td>
+                        <td title="{{ r.remittance_info or '-' }}">{{ (r.remittance_info or '-')[:60] }}{% if r.remittance_info and r.remittance_info|length > 60 %}…{% endif %}</td>
+                        <td>
+                            {% if in_db %}
+                                <span class="badge badge-success">Yes</span>
+                            {% else %}
+                                <span class="badge badge-danger">No</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: var(--color-text-muted); text-align: center; padding: var(--spacing-xl);">
+            No transactions found matching your criteria.
+        </p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- DB Transactions Table -->
+{% if transactions %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+    <h3 style="margin: 0;">Database Transactions</h3>
+    {% if total_amount %}
+    <div style="font-size: 1.1rem; font-weight: bold; color: var(--color-success);">
+        Total: ZAR {{ "%.2f"|format(total_amount) }}
+        <span style="font-size: 0.8rem; font-weight: normal; color: var(--color-text-secondary);">
+            ({{ transactions.total }} records)
+        </span>
+    </div>
+    {% endif %}
 </div>
 
 <div class="table-responsive">
     <table class="table table-striped table-hover">
         <thead>
             <tr>
+                <th>Date</th>
                 <th>Entry ID</th>
                 <th>Amount</th>
                 <th>Account</th>
                 <th>CID</th>
+                <th>Reference</th>
                 <th>Status</th>
-                <th>Posted Date</th>
-                <th style="width: 120px;">Action</th>
+                <th style="width: 100px;">Action</th>
             </tr>
         </thead>
         <tbody>
             {% for txn in transactions.items %}
             <tr>
+                <td>{{ txn.valueDate or '-' }}</td>
                 <td><code>{{ txn.entryId }}</code></td>
-                <td><strong>ZAR {{ "%.2f"|format(txn.amount) }}</strong></td>
-                <td>{{ txn.account }}</td>
+                <td><strong style="color: var(--color-success);">ZAR {{ "%.2f"|format(txn.amount) }}</strong></td>
+                <td><code>{{ txn.account }}</code></td>
                 <td>
                     {% if txn.CID == 'unallocated' %}
                         <span class="badge badge-danger">{{ txn.CID }}</span>
@@ -39,6 +201,7 @@
                         <span class="badge badge-success">{{ txn.CID }}</span>
                     {% endif %}
                 </td>
+                <td>{{ txn.reference or '-' }}</td>
                 <td>
                     {% if txn.posted == 'yes' %}
                         <span class="badge badge-success">Posted</span>
@@ -46,31 +209,39 @@
                         <span class="badge badge-warning">Pending</span>
                     {% endif %}
                 </td>
-                <td>{{ txn.postedDate.strftime('%Y-%m-%d %H:%M') if txn.postedDate else '-' }}</td>
-                <td><a href="/audit/{{ txn.entryId }}" class="btn btn-sm btn-primary">Audit Log</a></td>
+                <td><a href="/audit/{{ txn.entryId }}" class="btn btn-sm btn-primary">Audit</a></td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
+{% if transactions.pages > 1 %}
 <div class="pagination">
     {% if transactions.has_prev %}
-        <a href="?page=1&status={{ status }}">« First</a>
-        <a href="?page={{ transactions.prev_num }}&status={{ status }}">‹ Prev</a>
+        <a href="?page=1{% if search %}&search={{ search }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">« First</a>
+        <a href="?page={{ transactions.prev_num }}{% if search %}&search={{ search }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">‹ Prev</a>
     {% endif %}
     {% for page_num in transactions.iter_pages() %}
         {% if page_num %}
             {% if page_num == transactions.page %}
                 <span class="active">{{ page_num }}</span>
             {% else %}
-                <a href="?page={{ page_num }}&status={{ status }}">{{ page_num }}</a>
+                <a href="?page={{ page_num }}{% if search %}&search={{ search }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">{{ page_num }}</a>
             {% endif %}
+        {% else %}
+            <span>...</span>
         {% endif %}
     {% endfor %}
     {% if transactions.has_next %}
-        <a href="?page={{ transactions.next_num }}&status={{ status }}">Next ›</a>
-        <a href="?page={{ transactions.pages }}&status={{ status }}">Last »</a>
+        <a href="?page={{ transactions.next_num }}{% if search %}&search={{ search }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">Next ›</a>
+        <a href="?page={{ transactions.pages }}{% if search %}&search={{ search }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">Last »</a>
     {% endif %}
 </div>
+{% endif %}
+
+{% elif api_results is not defined or api_results is none %}
+<p style="color: var(--color-text-muted); text-align: center; padding: var(--spacing-2xl);">No transactions found.</p>
+{% endif %}
+
 {% endblock %}

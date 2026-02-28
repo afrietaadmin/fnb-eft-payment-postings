@@ -11,7 +11,7 @@ from app.uisp_analyzer import (
     get_duplicate_analysis_summary
 )
 import requests
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import logging
 
 main_bp = Blueprint('main', __name__)
@@ -111,16 +111,17 @@ def list_transactions():
 def query_api_transactions():
     """Query FNB API directly for transactions matching CID and/or search text"""
     try:
-        # Get form data
+        # Get form data — dates default to last 92 days if not provided
         from_date = request.form.get('api_from_date', '').strip()
         to_date = request.form.get('api_to_date', '').strip()
         cid = request.form.get('api_cid', '').strip()
         search_text = request.form.get('api_search_text', '').strip()
 
-        # Validate required date fields
-        if not from_date or not to_date:
-            flash('From date and to date are required', 'danger')
-            return redirect(url_for('main.list_transactions'))
+        today = datetime.now().date()
+        if not to_date:
+            to_date = today.strftime('%Y-%m-%d')
+        if not from_date:
+            from_date = (today - timedelta(days=30)).strftime('%Y-%m-%d')
 
         # Normalize CID format (remove "CID" prefix if present)
         if cid:
@@ -185,6 +186,13 @@ def query_api_transactions():
                 logger.error(f"Error formatting API transaction: {e}")
                 continue
 
+        # Check which API result entryIds are already in the local DB
+        api_entry_ids = [r['entryId'] for r in api_results if r.get('entryId')]
+        existing_ids = set()
+        if api_entry_ids:
+            existing_rows = Transaction.query.filter(Transaction.entryId.in_(api_entry_ids)).with_entities(Transaction.entryId).all()
+            existing_ids = {row.entryId for row in existing_rows}
+
         # Prepare context for template
         query_params = {
             'cid': cid,
@@ -196,6 +204,7 @@ def query_api_transactions():
         return render_template(
             'transactions.html',
             api_results=api_results,
+            db_entry_ids=existing_ids,
             query_params=query_params,
             result_count=len(api_results),
             transactions=None,
