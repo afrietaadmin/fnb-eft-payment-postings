@@ -1,0 +1,1222 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  /* === Page-specific overrides === */
+
+  /* === Column header filters === */
+  .col-filter { display: block; margin-top: 5px; font-size: 11px; font-weight: 400;
+    padding: 2px 4px; border: 1px solid #ccd; border-radius: 4px;
+    background: #fff; color: var(--color-text); cursor: pointer; width: 100%; max-width: 88px; }
+  .col-filter:focus { outline: 1px solid var(--color-primary); }
+  .col-filter.active-filter { border-color: var(--color-primary); background: #eaf1fb; font-weight: 700; }
+
+  .settings-card { background: var(--color-bg-light); border: 1px solid #e0e6ee;
+                   border-radius: 10px; padding: 20px 24px; margin-bottom: 24px;
+                   display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-end; }
+  .settings-group { display: flex; flex-direction: column; gap: 6px; }
+  .settings-group label { font-weight: 600; font-size: 13px; color: var(--color-text); }
+
+  .mode-options { display: flex; gap: 10px; flex-wrap: wrap; }
+  .mode-btn { padding: 8px 16px; border-radius: 6px; border: 2px solid #ccc;
+              background: #fff; cursor: pointer; font-size: 13px; font-weight: 600;
+              transition: all 0.2s; white-space: nowrap; }
+  .mode-btn.active { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
+  .mode-btn:hover:not(.active) { border-color: var(--color-primary); color: var(--color-primary); }
+
+  .toggle-switch { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .toggle-switch input[type=checkbox] { width: 42px; height: 22px; appearance: none;
+    background: #ccc; border-radius: 11px; position: relative; cursor: pointer; transition: background 0.2s; }
+  .toggle-switch input[type=checkbox]:checked { background: var(--color-warning); }
+  .toggle-switch input[type=checkbox]::before {
+    content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%;
+    background: #fff; top: 2px; left: 2px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+  .toggle-switch input[type=checkbox]:checked::before { transform: translateX(20px); }
+  .toggle-label { font-size: 13px; font-weight: 600; color: var(--color-warning); }
+
+  .action-bar { display: flex; align-items: center; gap: 16px; padding: 14px 0; flex-wrap: wrap; }
+  .selected-count { font-size: 14px; color: var(--color-neutral); }
+  .selected-count strong { color: var(--color-text); }
+
+  .table-notif th, .table-notif td { vertical-align: middle; }
+  .table-notif th.cb-col, .table-notif td.cb-col { width: 36px; text-align: center; padding: 0 8px; }
+  .table-notif td.amount-col { font-weight: 700; color: var(--color-danger); text-align: right; }
+  .table-notif tr.row-hidden { display: none; }
+  .table-notif tr.row-eligible { }
+  .table-notif tr.row-ineligible { opacity: 0.45; }
+
+  /* === Progress modal === */
+  .send-modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5);
+    z-index: 1000; align-items: center; justify-content: center;
+  }
+  .send-modal-overlay.visible { display: flex; }
+  .send-modal {
+    background: #fff; border-radius: 12px; padding: 36px 40px; min-width: 360px;
+    max-width: 520px; box-shadow: 0 20px 60px rgba(0,0,0,.25); text-align: center;
+  }
+  .send-modal h3 { margin: 0 0 16px; font-size: 20px; }
+  .progress-bar-wrap { background: #eee; border-radius: 8px; height: 12px; margin: 16px 0; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--color-primary); border-radius: 8px;
+                       transition: width 0.3s; width: 0%; }
+  .progress-text { font-size: 13px; color: var(--color-neutral); margin-bottom: 4px; }
+
+  /* === Results section === */
+  .results-section { margin-top: 32px; }
+  .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin: 16px 0; }
+  .result-card { border-radius: 10px; padding: 18px 20px; }
+  .result-card.card-sent     { background: #e8f8f0; border: 1px solid #00a86b; }
+  .result-card.card-failed   { background: #fff0f0; border: 1px solid var(--color-danger); }
+  .result-card.card-skipped  { background: #fff9ec; border: 1px solid var(--color-warning); }
+  .result-card h4 { margin: 0 0 6px; font-size: 15px; }
+  .result-card .rc-count { font-size: 28px; font-weight: 800; margin: 4px 0 8px; }
+  .result-list { list-style: none; padding: 0; margin: 8px 0 0; font-size: 13px; max-height: 180px;
+                 overflow-y: auto; border-top: 1px solid rgba(0,0,0,.1); padding-top: 8px; }
+  .result-list li { padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,.05); }
+  .result-list li:last-child { border-bottom: none; }
+
+  /* === No-config warning === */
+  .config-warning { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px;
+                    padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+  /* === History table === */
+  .history-section { margin-top: 40px; }
+  .log-badge-sent    { background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+  .log-badge-failed  { background: #f8d7da; color: #721c24; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+  .log-badge-skipped { background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+  .log-badge-test    { background: #cce5ff; color: #004085; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 4px; }
+  .badge-vip         { background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+
+  /* === Message editor === */
+  .msg-editor-card { border: 1px solid #d0dce8; border-radius: 10px; margin-bottom: 24px; overflow: hidden; }
+  .msg-editor-header { display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 18px; background: var(--color-bg-light); cursor: pointer;
+    font-weight: 600; font-size: 14px; user-select: none; }
+  .msg-editor-header:hover { background: #eaf1fb; }
+  .msg-editor-chevron { font-size: 12px; transition: transform 0.2s; }
+  .msg-editor-chevron.open { transform: rotate(180deg); }
+  .msg-editor-body { padding: 16px 18px 18px; display: none; }
+  .msg-editor-body.open { display: block; }
+
+  .msg-structure-note { display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    font-size: 12px; margin-bottom: 14px; padding: 10px 14px;
+    background: #f0f6ff; border-radius: 6px; border: 1px solid #c8ddf8; }
+  .msg-struct-part { background: #fff; border: 1px solid #c8ddf8; border-radius: 4px; padding: 3px 8px; }
+  .msg-struct-editable { border-color: var(--color-primary); color: var(--color-primary); font-weight: 600; }
+  .msg-struct-sep { color: var(--color-neutral); }
+
+  .msg-placeholders { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .ph-btn { padding: 5px 11px; border-radius: 14px; border: 1px solid #b0c4d8;
+    background: #f5f8fc; cursor: pointer; font-size: 12px; font-weight: 600;
+    transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+  .ph-btn:hover { background: var(--color-primary-light); border-color: var(--color-primary); }
+  .ph-btn.ph-required { border-color: var(--color-danger); color: var(--color-danger); }
+  .ph-btn.ph-required:hover { background: #fff0f0; }
+  .ph-req-badge { font-size: 10px; background: var(--color-danger); color: #fff;
+    padding: 1px 5px; border-radius: 8px; font-weight: 700; }
+
+  .msg-editor-layout { display: grid; grid-template-columns: 1fr 280px; gap: 16px; }
+  @media (max-width: 800px) { .msg-editor-layout { grid-template-columns: 1fr; } }
+
+  #msgTextarea { width: 100%; box-sizing: border-box; padding: 10px 12px;
+    border: 2px solid #d0dce8; border-radius: 8px; font-size: 14px; line-height: 1.5;
+    resize: vertical; font-family: inherit; transition: border-color 0.2s; min-height: 90px; }
+  #msgTextarea:focus { outline: none; border-color: var(--color-primary); }
+  #msgTextarea.invalid { border-color: var(--color-danger); }
+  #msgTextarea.valid   { border-color: var(--color-success); }
+
+  .msg-meta-row { display: flex; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+  .char-count { font-size: 12px; font-weight: 600; color: var(--color-neutral); white-space: nowrap; }
+  .char-count.warn { color: var(--color-warning); }
+  .char-count.over { color: var(--color-danger); }
+
+  .msg-validation { display: flex; flex-direction: column; gap: 3px; font-size: 12px; flex: 1; }
+  .val-error   { color: var(--color-danger); }
+  .val-warning { color: var(--color-warning); }
+  .val-ok      { color: var(--color-success); }
+
+  .msg-preview-panel { background: #f5f8fc; border: 1px solid #d0dce8; border-radius: 8px;
+    padding: 14px; font-size: 13px; display: flex; flex-direction: column; gap: 8px; }
+  .msg-preview-label { font-size: 11px; font-weight: 700; color: var(--color-neutral);
+    text-transform: uppercase; letter-spacing: .5px; }
+  .msg-preview-name  { font-weight: 700; color: var(--color-text); }
+  .msg-preview-body  { color: var(--color-text); line-height: 1.5; white-space: pre-wrap;
+    background: #fff; border-radius: 6px; padding: 8px 10px; border: 1px solid #e0e6ee;
+    min-height: 56px; }
+  .msg-preview-btn   { font-size: 12px; color: var(--color-primary); font-weight: 600;
+    background: #e6f2ff; border-radius: 6px; padding: 5px 10px; text-align: center; }
+
+  /* === Quick filter tabs === */
+  .quick-filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .quick-filter-btn { padding: 6px 14px; border-radius: 20px; border: 2px solid #ccd;
+    background: #fff; cursor: pointer; font-size: 13px; font-weight: 600;
+    color: var(--color-text); transition: all 0.15s; }
+  .quick-filter-btn.active { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
+  .quick-filter-btn:hover:not(.active) { border-color: var(--color-primary); color: var(--color-primary); }
+
+  /* === Log filter bar === */
+  .log-filter-bar { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end;
+    padding: 14px 16px; background: var(--color-bg-light); border: 1px solid #e0e6ee;
+    border-radius: 10px; margin-bottom: 14px; }
+  .log-filter-group { display: flex; flex-direction: column; gap: 4px; }
+  .log-filter-group label { font-size: 12px; font-weight: 600; color: var(--color-neutral); }
+  .log-filter-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+  .log-pill { padding: 4px 12px; border-radius: 14px; border: 1px solid #ccd;
+    background: #fff; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.15s; }
+  .log-pill.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+  .log-pill:hover:not(.active) { border-color: var(--color-primary); color: var(--color-primary); }
+  .log-pill.pill-sent.active   { background: #00a86b; border-color: #00a86b; }
+  .log-pill.pill-failed.active { background: var(--color-danger); border-color: var(--color-danger); }
+  .log-pill.pill-skipped.active { background: #e6a817; border-color: #e6a817; color: #fff; }
+  .log-meta { font-size: 13px; color: var(--color-neutral); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 16px; }
+  .log-pagination { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .log-pagination button { padding: 5px 14px; border-radius: 6px; border: 1px solid #ccd;
+    background: #fff; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .log-pagination button:disabled { opacity: 0.4; cursor: default; }
+  .log-pagination .page-info { font-size: 13px; color: var(--color-neutral); }
+  .log-clear-btn { font-size: 12px; padding: 4px 10px; border-radius: 6px;
+    border: 1px solid #ccd; background: #fff; cursor: pointer; align-self: flex-end; }
+  .log-clear-btn:hover { border-color: var(--color-danger); color: var(--color-danger); }
+
+  /* === Billing-cycle notified badges === */
+  .badge-cycle { display: inline-block; background: #e0e7ff; color: #3730a3;
+    padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 700;
+    margin-right: 2px; white-space: nowrap; }
+  .badge-cycle-none { color: var(--color-neutral); font-size: 12px; }
+  tr.row-cycle-done .badge-cycle { opacity: 0.7; }
+
+  /* === Sortable column headers === */
+  th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+  th.sortable:hover { background: rgba(0,102,204,.08); }
+  th.sortable::after { content: ' ⇅'; font-size: 11px; opacity: 0.35; }
+  th.sortable.sort-asc::after  { content: ' ▲'; opacity: 1; }
+  th.sortable.sort-desc::after { content: ' ▼'; opacity: 1; }
+</style>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Customer Notifications</h1>
+        <p class="page-subtitle">Send WhatsApp payment reminders to customers</p>
+    </div>
+</div>
+
+{% if uisp_error %}
+<div class="config-warning" style="background:#f8d7da; border-color:#f5c6cb;">
+    <span style="font-size:20px;">❌</span>
+    <div>
+        <strong>Failed to fetch customers from UISP.</strong>
+        {{ uisp_error }}
+    </div>
+</div>
+{% endif %}
+
+{% if not whatsapp_configured %}
+<div class="config-warning">
+    <span style="font-size:20px;">⚠️</span>
+    <div>
+        <strong>WhatsApp API not configured.</strong>
+        Set <code>WHATSAPP_PHONE_NUMBER_ID</code> and <code>WHATSAPP_ACCESS_TOKEN</code>
+        in your <code>.env</code> file and restart the application.
+        Messages cannot be sent until these are configured.
+    </div>
+</div>
+{% endif %}
+
+<!-- ===================== Settings card ===================== -->
+<div class="settings-card">
+
+    <div class="settings-group">
+        <label>Message Type</label>
+        <div class="mode-options">
+            <button type="button" class="mode-btn active" data-mode="1"
+                    title="Courtesy reminder for new invoices">1 — New Invoice</button>
+            <button type="button" class="mode-btn" data-mode="2"
+                    title="Only customers with overdue invoices (not yet suspended)">2 — Overdue</button>
+            <button type="button" class="mode-btn" data-mode="3"
+                    title="Only customers with suspended services">3 — Suspended</button>
+        </div>
+    </div>
+
+    <div class="settings-group">
+        <label>Min Outstanding</label>
+        <input id="minOutstanding" type="number" class="form-control" style="width:110px;"
+               value="{{ min_outstanding }}" min="0" step="1">
+    </div>
+
+    <div class="settings-group">
+        <label>Include VIP</label>
+        <label class="toggle-switch" title="VIP customers are excluded by default">
+            <input type="checkbox" id="includeVipToggle">
+            <span class="toggle-label" id="includeVipLabel" style="color:var(--color-neutral);">OFF</span>
+        </label>
+    </div>
+
+    <div class="settings-group">
+        <label>Test Mode</label>
+        <label class="toggle-switch" title="In test mode messages are sent to the test phone number only">
+            <input type="checkbox" id="testModeToggle">
+            <span class="toggle-label" id="testModeLabel">OFF</span>
+        </label>
+    </div>
+
+</div>
+
+<!-- ===================== Message Editor ===================== -->
+<div class="msg-editor-card" id="msgEditorCard">
+    <div class="msg-editor-header" id="msgEditorToggle">
+        <span>✏️ Edit Message</span>
+        <span class="msg-editor-chevron" id="msgEditorChevron">▼</span>
+    </div>
+    <div class="msg-editor-body" id="msgEditorBody">
+
+        <div class="msg-structure-note">
+            <strong>Template structure:</strong>
+            <span class="msg-struct-part">📷 Header (logo — fixed)</span>
+            <span class="msg-struct-sep">→</span>
+            <span class="msg-struct-part">👤 Customer name (auto)</span>
+            <span class="msg-struct-sep">→</span>
+            <span class="msg-struct-part msg-struct-editable">✏️ Message body (editable below)</span>
+            <span class="msg-struct-sep">→</span>
+            <span class="msg-struct-part">🔗 Pay button (auto)</span>
+        </div>
+
+        <div class="msg-placeholders">
+            <span style="font-size:13px; font-weight:600; color:var(--color-text);">Insert placeholder:</span>
+            <button type="button" class="ph-btn" data-ph="{amount}" title="Customer's outstanding amount">💰 {amount}</button>
+            <button type="button" class="ph-btn ph-required" data-ph="{reference}" title="Payment reference — required">🔑 {reference} <span class="ph-req-badge">required</span></button>
+            <button type="button" class="ph-btn" data-ph="{name}" title="Customer's full name">👤 {name}</button>
+        </div>
+
+        <div class="msg-editor-layout">
+            <div class="msg-editor-left">
+                <textarea id="msgTextarea" rows="4" maxlength="{{ max_message_length + 50 }}"
+                    spellcheck="true"></textarea>
+
+                <div class="msg-meta-row">
+                    <span class="char-count" id="charCount">0 / {{ max_message_length }}</span>
+                    <div class="msg-validation" id="msgValidation"></div>
+                    <button type="button" class="btn btn-sm" id="resetMsgBtn"
+                        style="margin-left:auto; font-size:12px; padding:4px 10px;">↺ Reset to default</button>
+                </div>
+            </div>
+
+            <div class="msg-preview-panel">
+                <div class="msg-preview-label">Live preview</div>
+                <div class="msg-preview-name" id="previewName">👤 <em>Customer Name</em></div>
+                <div class="msg-preview-body" id="previewBody"></div>
+                <div class="msg-preview-btn">🔗 Pay: R<em>amount</em>/CID<em>id</em></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===================== Action bar ===================== -->
+<div class="action-bar">
+    <label style="font-size:14px; display:flex; align-items:center; gap:6px; cursor:pointer;">
+        <input type="checkbox" id="selectAll"> <strong>Select All</strong>
+    </label>
+    <span class="selected-count"><strong id="selectedCount">0</strong> selected</span>
+    <button id="sendBtn" class="btn btn-primary" {% if not whatsapp_configured %}disabled title="Configure WhatsApp API first"{% endif %}>
+        Send WhatsApp to Selected
+    </button>
+    <span id="eligibleNote" style="font-size:13px; color:var(--color-neutral);"></span>
+</div>
+
+<!-- ===================== Quick filters ===================== -->
+<div class="quick-filter-tabs">
+    <button type="button" class="quick-filter-btn active" data-qf="all">All Customers</button>
+    <button type="button" class="quick-filter-btn" data-qf="current">Current</button>
+    <button type="button" class="quick-filter-btn" data-qf="overdue">Overdue</button>
+    <button type="button" class="quick-filter-btn" data-qf="suspended">Suspended</button>
+</div>
+
+<!-- ===================== Customer table ===================== -->
+<div class="table-responsive">
+<table class="table table-striped table-hover table-notif" id="customerTable">
+    <thead>
+        <tr>
+            <th class="cb-col"><input type="checkbox" id="headerCheck" title="Select all visible"></th>
+            <th class="sortable" data-sort="id" data-type="num">CID</th>
+            <th class="sortable" data-sort="name" data-type="str">Name</th>
+            <th>Phone</th>
+            <th class="sortable" data-sort="outstanding" data-type="num" style="text-align:right;">Outstanding</th>
+            <th class="sortable" data-sort="overdue" data-type="bool">
+                Overdue
+                <select class="col-filter" data-col-filter="overdue" title="Filter by overdue status">
+                    <option value="all">All</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </th>
+            <th class="sortable" data-sort="suspended" data-type="bool">
+                Suspended
+                <select class="col-filter" data-col-filter="suspended" title="Filter by suspension status">
+                    <option value="all">All</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </th>
+            <th class="sortable" data-sort="vip" data-type="bool">
+                VIP
+                <select class="col-filter" data-col-filter="vip" title="Filter by VIP status">
+                    <option value="all">All</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </th>
+            <th title="Modes already sent this billing cycle (real sends only)">This Cycle</th>
+        </tr>
+    </thead>
+    <tbody id="customerTableBody">
+    {% for c in customers %}
+    <tr class="customer-row"
+        data-id="{{ c.id }}"
+        data-outstanding="{{ c.account_outstanding }}"
+        data-overdue="{{ 'true' if c.has_overdue_invoice else 'false' }}"
+        data-suspended="{{ 'true' if c.has_suspended_service else 'false' }}"
+        data-vip="{{ 'true' if c.is_vip else 'false' }}"
+        data-name="{{ c.full_name | e }}"
+        data-phone="{{ c.phone | e }}"
+        data-notified-modes="{{ sent_this_cycle.get(c.id, []) | join(',') }}">
+
+        <td class="cb-col">
+            <input type="checkbox" class="row-check" value="{{ c.id }}">
+        </td>
+        <td><code>CID{{ c.id }}</code></td>
+        <td>{{ c.full_name }}</td>
+        <td>{{ c.phone }}</td>
+        <td class="amount-col">R {{ "%.2f"|format(c.account_outstanding) }}</td>
+        <td>
+            {% if c.has_overdue_invoice %}
+                <span class="badge badge-danger">Overdue</span>
+            {% else %}
+                <span class="badge badge-success">Current</span>
+            {% endif %}
+        </td>
+        <td>
+            {% if c.has_suspended_service %}
+                <span class="badge badge-danger">Suspended</span>
+            {% else %}
+                <span class="badge badge-success">Active</span>
+            {% endif %}
+        </td>
+        <td>
+            {% if c.is_vip %}
+                <span class="badge-vip">⭐ VIP</span>
+            {% else %}
+                <span style="color:var(--color-neutral); font-size:12px;">—</span>
+            {% endif %}
+        </td>
+        <td>
+            {% set notified = sent_this_cycle.get(c.id, []) %}
+            {% if notified %}
+                {% for m in ['1', '2', '3'] %}{% if m in notified %}<span class="badge-cycle" title="{{ mode_labels[m] }}">M{{ m }}</span>{% endif %}{% endfor %}
+            {% else %}
+                <span class="badge-cycle-none">—</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+
+{% if not customers and not uisp_error %}
+<div style="text-align:center; padding:40px; color:var(--color-neutral);">
+    <p style="font-size:16px;">No customers with outstanding balances and phone numbers found in UISP.</p>
+</div>
+{% endif %}
+
+<p style="font-size:12px; color:var(--color-neutral); margin-top:8px;">
+    Data fetched live from UISP — {{ customers|length }} customer(s) with outstanding balances.
+</p>
+
+<!-- ===================== Send progress modal ===================== -->
+<div class="send-modal-overlay" id="sendModal">
+    <div class="send-modal">
+        <h3>Sending WhatsApp Messages</h3>
+        <div class="progress-text" id="sendProgressText">Preparing...</div>
+        <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="sendProgressBar"></div>
+        </div>
+        <div style="font-size:13px; color:var(--color-neutral);" id="sendProgressDetail"></div>
+    </div>
+</div>
+
+<!-- ===================== Results section (populated after send) ===================== -->
+<div class="results-section" id="resultsSection" style="display:none;">
+    <hr>
+    <h2 style="font-size:20px; margin-bottom:4px;">Send Results</h2>
+    <p id="resultsSummaryText" style="color:var(--color-neutral); font-size:14px; margin-bottom:16px;"></p>
+
+    <div class="results-grid">
+        <div class="result-card card-sent">
+            <h4>✅ Sent</h4>
+            <div class="rc-count" id="sentCount">0</div>
+            <ul class="result-list" id="sentList"></ul>
+        </div>
+        <div class="result-card card-failed">
+            <h4>❌ Failed</h4>
+            <div class="rc-count" id="failedCount">0</div>
+            <ul class="result-list" id="failedList"></ul>
+        </div>
+        <div class="result-card card-skipped">
+            <h4>⏭️ Skipped</h4>
+            <div class="rc-count" id="skippedCount">0</div>
+            <ul class="result-list" id="skippedList"></ul>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== Notification History ===================== -->
+<div class="history-section">
+    <h2 style="font-size:18px; margin-bottom:14px;">Notification History</h2>
+
+    <div class="log-filter-bar">
+
+        <div class="log-filter-group" style="flex:1; min-width:190px;">
+            <label>Search</label>
+            <input type="text" id="logSearch" class="form-control"
+                   placeholder="Name, phone, CID or reference…" style="font-size:13px;">
+        </div>
+
+        <div class="log-filter-group">
+            <label>Mode</label>
+            <div class="log-filter-pills">
+                <button class="log-pill active" data-log-mode="all">All</button>
+                <button class="log-pill" data-log-mode="1">New Invoice</button>
+                <button class="log-pill" data-log-mode="2">Overdue</button>
+                <button class="log-pill" data-log-mode="3">Suspended</button>
+            </div>
+        </div>
+
+        <div class="log-filter-group">
+            <label>Status</label>
+            <div class="log-filter-pills">
+                <button class="log-pill active" data-log-status="all">All</button>
+                <button class="log-pill pill-sent"    data-log-status="sent">Sent</button>
+                <button class="log-pill pill-failed"  data-log-status="failed">Failed</button>
+                <button class="log-pill pill-skipped" data-log-status="skipped">Skipped</button>
+            </div>
+        </div>
+
+        <div class="log-filter-group">
+            <label>From</label>
+            <input type="date" id="logDateFrom" class="form-control" style="font-size:13px; width:145px;">
+        </div>
+
+        <div class="log-filter-group">
+            <label>To</label>
+            <input type="date" id="logDateTo" class="form-control" style="font-size:13px; width:145px;">
+        </div>
+
+        <div class="log-filter-group">
+            <label>Test sends</label>
+            <label class="toggle-switch" title="Include or exclude test-mode sends">
+                <input type="checkbox" id="logIncludeTest" checked>
+                <span class="toggle-label" id="logIncludeTestLabel" style="color:var(--color-neutral);">Show</span>
+            </label>
+        </div>
+
+        <button class="log-clear-btn" id="logClearBtn" title="Reset all filters">✕ Clear</button>
+
+    </div>
+
+    <div class="log-meta">
+        <span id="logResultMeta">Loading…</span>
+    </div>
+
+    <div class="table-responsive">
+    <table class="table table-striped" style="font-size:13px;">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>CID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Mode</th>
+                <th style="text-align:right;">Amount</th>
+                <th>Status</th>
+                <th>Sent By</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody id="logTableBody">
+            <tr><td colspan="9" style="text-align:center; color:var(--color-neutral); padding:28px;">Loading…</td></tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div class="log-pagination">
+        <button id="logPrevBtn" disabled>← Prev</button>
+        <span class="page-info" id="logPageInfo"></span>
+        <button id="logNextBtn" disabled>Next →</button>
+    </div>
+</div>
+
+<script>
+(function () {
+    // ── State ──────────────────────────────────────────────────────
+    let currentMode = '1';
+    let testMode    = false;
+    let includeVip  = false;
+    let selectedIds = new Set();
+
+    const MIN_OUTSTANDING_INPUT = document.getElementById('minOutstanding');
+    const SEND_BTN              = document.getElementById('sendBtn');
+    const SELECT_ALL_CB         = document.getElementById('selectAll');
+    const HEADER_CHECK          = document.getElementById('headerCheck');
+    const SELECTED_COUNT        = document.getElementById('selectedCount');
+    const ELIGIBLE_NOTE         = document.getElementById('eligibleNote');
+    const RESULTS_SECTION       = document.getElementById('resultsSection');
+    const SEND_MODAL            = document.getElementById('sendModal');
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    // ── Mode buttons ───────────────────────────────────────────────
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentMode = btn.dataset.mode;
+            selectedIds.clear();
+            applyFilters();
+        });
+    });
+
+    // ── Column header filters ──────────────────────────────────────
+    document.querySelectorAll('.col-filter').forEach(sel => {
+        // Prevent a click on the <select> from also firing the sort handler on <th>
+        sel.addEventListener('click', e => e.stopPropagation());
+        sel.addEventListener('change', () => {
+            sel.classList.toggle('active-filter', sel.value !== 'all');
+            // Manual dropdown change — deactivate quick-filter tabs
+            document.querySelectorAll('.quick-filter-btn').forEach(b => b.classList.remove('active'));
+            selectedIds.clear();
+            applyFilters();
+        });
+    });
+
+    // ── Quick filter tabs ──────────────────────────────────────────
+    const QF_PRESETS = {
+        all:       { overdue: 'all',   suspended: 'all'   },
+        current:   { overdue: 'false', suspended: 'false' },
+        overdue:   { overdue: 'true',  suspended: 'false' },
+        suspended: { overdue: 'all',   suspended: 'true'  },
+    };
+    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const preset = QF_PRESETS[btn.dataset.qf];
+            if (!preset) return;
+            const overdropdown = document.querySelector('[data-col-filter="overdue"]');
+            const susdropdown  = document.querySelector('[data-col-filter="suspended"]');
+            overdropdown.value = preset.overdue;
+            susdropdown.value  = preset.suspended;
+            overdropdown.classList.toggle('active-filter', preset.overdue   !== 'all');
+            susdropdown.classList.toggle('active-filter',  preset.suspended !== 'all');
+            document.querySelectorAll('.quick-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedIds.clear();
+            applyFilters();
+        });
+    });
+
+    // ── VIP toggle ─────────────────────────────────────────────────
+    document.getElementById('includeVipToggle').addEventListener('change', function () {
+        includeVip = this.checked;
+        const label = document.getElementById('includeVipLabel');
+        label.textContent = includeVip ? 'ON' : 'OFF';
+        label.style.color = includeVip ? 'var(--color-warning)' : 'var(--color-neutral)';
+        selectedIds.clear();
+        applyFilters();
+    });
+
+    // ── Test mode toggle ───────────────────────────────────────────
+    document.getElementById('testModeToggle').addEventListener('change', function () {
+        testMode = this.checked;
+        document.getElementById('testModeLabel').textContent = testMode ? 'ON' : 'OFF';
+        selectedIds.clear();
+        applyFilters();  // re-evaluate cycle eligibility
+    });
+
+    // ── Min outstanding change ─────────────────────────────────────
+    MIN_OUTSTANDING_INPUT.addEventListener('input', () => {
+        selectedIds.clear();
+        applyFilters();
+    });
+
+    // ── Apply filters + eligibility ────────────────────────────────
+    function applyFilters() {
+        const minOut = parseFloat(MIN_OUTSTANDING_INPUT.value) || 0;
+        const rows   = document.querySelectorAll('.customer-row');
+        let visible = 0;
+        let eligible = 0;
+
+        rows.forEach(row => {
+            const outstanding = parseFloat(row.dataset.outstanding) || 0;
+            const overdue     = row.dataset.overdue === 'true';
+            const suspended   = row.dataset.suspended === 'true';
+            const isVip       = row.dataset.vip === 'true';
+
+            // VIP master toggle — hide entirely if includeVip is off
+            if (isVip && !includeVip) {
+                row.classList.add('row-hidden');
+                row.classList.remove('row-eligible', 'row-ineligible');
+                row.querySelector('.row-check').checked = false;
+                selectedIds.delete(parseInt(row.dataset.id, 10));
+                return;
+            }
+
+            // Column header filters
+            const overdueFilter   = document.querySelector('[data-col-filter="overdue"]').value;
+            const suspendedFilter = document.querySelector('[data-col-filter="suspended"]').value;
+            const vipFilter       = document.querySelector('[data-col-filter="vip"]').value;
+            let colVisible = true;
+            if (overdueFilter   !== 'all') colVisible = colVisible && (overdue   === (overdueFilter   === 'true'));
+            if (suspendedFilter !== 'all') colVisible = colVisible && (suspended === (suspendedFilter === 'true'));
+            if (vipFilter       !== 'all') colVisible = colVisible && (isVip     === (vipFilter       === 'true'));
+
+            if (!colVisible) {
+                row.classList.add('row-hidden');
+                row.classList.remove('row-eligible', 'row-ineligible');
+                row.querySelector('.row-check').checked = false;
+                selectedIds.delete(parseInt(row.dataset.id, 10));
+                return;
+            }
+
+            row.classList.remove('row-hidden');
+            visible++;
+
+            // Eligibility for selected mode
+            const notifiedModes = (row.dataset.notifiedModes || '').split(',').filter(Boolean);
+            const alreadySentThisCycle = !testMode && notifiedModes.includes(currentMode);
+            let isEligible = outstanding > minOut && !alreadySentThisCycle;
+            if (currentMode === '2') isEligible = isEligible && overdue && !suspended;
+            if (currentMode === '3') isEligible = isEligible && suspended;
+
+            if (isEligible) {
+                row.classList.remove('row-ineligible');
+                row.classList.add('row-eligible');
+                eligible++;
+            } else {
+                row.classList.add('row-ineligible');
+                row.classList.remove('row-eligible');
+                row.querySelector('.row-check').checked = false;
+                selectedIds.delete(parseInt(row.dataset.id, 10));
+            }
+        });
+
+        ELIGIBLE_NOTE.textContent = `${eligible} of ${visible} shown eligible for mode ${currentMode}`;
+        updateSelectedCount();
+    }
+
+    // ── Row checkboxes ─────────────────────────────────────────────
+    document.getElementById('customerTableBody').addEventListener('change', function (e) {
+        if (!e.target.classList.contains('row-check')) return;
+        const row = e.target.closest('tr');
+        const id  = parseInt(row.dataset.id, 10);
+        if (e.target.checked) {
+            // Only allow checking eligible rows
+            if (!row.classList.contains('row-eligible')) {
+                e.target.checked = false;
+                return;
+            }
+            selectedIds.add(id);
+        } else {
+            selectedIds.delete(id);
+        }
+        updateSelectedCount();
+    });
+
+    // ── Select all (visible eligible) ─────────────────────────────
+    function handleSelectAll(checked) {
+        document.querySelectorAll('.customer-row').forEach(row => {
+            if (row.classList.contains('row-hidden') || row.classList.contains('row-ineligible')) return;
+            const cb = row.querySelector('.row-check');
+            cb.checked = checked;
+            const id = parseInt(row.dataset.id, 10);
+            checked ? selectedIds.add(id) : selectedIds.delete(id);
+        });
+        updateSelectedCount();
+    }
+
+    SELECT_ALL_CB.addEventListener('change', e => handleSelectAll(e.target.checked));
+    HEADER_CHECK.addEventListener('change', e => handleSelectAll(e.target.checked));
+
+    function updateSelectedCount() {
+        SELECTED_COUNT.textContent = selectedIds.size;
+        SEND_BTN.disabled = selectedIds.size === 0 || {{ 'false' if whatsapp_configured else 'true' }};
+    }
+
+    // ── Send button ────────────────────────────────────────────────
+    SEND_BTN.addEventListener('click', () => {
+        if (selectedIds.size === 0) return;
+
+        // Validate message before allowing send
+        if (!validateAndPreview()) {
+            showNotification('Invalid Message', 'Please fix the message errors before sending.', 'error', 5000);
+            document.getElementById('msgEditorBody').classList.add('open');
+            document.getElementById('msgEditorChevron').classList.add('open');
+            msgTextarea.focus();
+            return;
+        }
+
+        const modeNames = { '1': 'New Invoice Reminder', '2': 'Overdue Warning', '3': 'Suspension Notice' };
+        const confirmed = confirm(
+            `Send "${modeNames[currentMode]}" to ${selectedIds.size} customer(s)?` +
+            (testMode ? '\n\n⚠️  TEST MODE — messages go to test phone number.' : '')
+        );
+        if (!confirmed) return;
+
+        // Show modal
+        SEND_MODAL.classList.add('visible');
+        document.getElementById('sendProgressText').textContent = 'Sending messages…';
+        document.getElementById('sendProgressBar').style.width = '10%';
+        document.getElementById('sendProgressDetail').textContent = '';
+        RESULTS_SECTION.style.display = 'none';
+
+        // Build full customer objects from table row data attributes
+        const customersToSend = [];
+        document.querySelectorAll('.customer-row').forEach(row => {
+            const id = parseInt(row.dataset.id, 10);
+            if (!selectedIds.has(id)) return;
+            customersToSend.push({
+                id:                    id,
+                full_name:             row.dataset.name,
+                phone:                 row.dataset.phone,
+                account_outstanding:   parseFloat(row.dataset.outstanding),
+                has_overdue_invoice:   row.dataset.overdue === 'true',
+                has_suspended_service: row.dataset.suspended === 'true',
+                is_vip:                row.dataset.vip === 'true',
+            });
+        });
+
+        fetch('{{ url_for("notifications.send_notifications") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({
+                customers: customersToSend,
+                mode: currentMode,
+                test_mode: testMode,
+                message_template: msgTextarea.value.trim(),
+            }),
+        })
+        .then(resp => {
+            document.getElementById('sendProgressBar').style.width = '90%';
+            return resp.json();
+        })
+        .then(data => {
+            document.getElementById('sendProgressBar').style.width = '100%';
+            document.getElementById('sendProgressText').textContent = 'Done!';
+
+            setTimeout(() => {
+                SEND_MODAL.classList.remove('visible');
+                showResults(data);
+            }, 600);
+        })
+        .catch(err => {
+            SEND_MODAL.classList.remove('visible');
+            showNotification('Send Error', 'Failed to send notifications: ' + err.message, 'error', 6000);
+        });
+    });
+
+    // ── Results ────────────────────────────────────────────────────
+    function showResults(data) {
+        RESULTS_SECTION.style.display = 'block';
+        RESULTS_SECTION.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        document.getElementById('sentCount').textContent    = data.sent.length;
+        document.getElementById('failedCount').textContent  = data.failed.length;
+        document.getElementById('skippedCount').textContent = data.skipped.length;
+
+        const testNote = data.test_mode ? ' (TEST MODE)' : '';
+        document.getElementById('resultsSummaryText').textContent =
+            `${data.mode_label}${testNote} — Sent: ${data.sent.length}, Failed: ${data.failed.length}, Skipped: ${data.skipped.length}`;
+
+        populateList('sentList',    data.sent,    r => `CID${r.id} — ${r.name}`);
+        populateList('failedList',  data.failed,  r => `CID${r.id} — ${r.name}: ${r.reason}`);
+        populateList('skippedList', data.skipped, r => `CID${r.id} — ${r.name}: ${r.reason}`);
+
+        if (data.sent.length > 0) {
+            showNotification('Notifications Sent',
+                `Successfully sent ${data.sent.length} WhatsApp message(s)${testNote}.`, 'success', 6000);
+        }
+        if (data.failed.length > 0) {
+            showNotification('Some Failed',
+                `${data.failed.length} message(s) failed to send.`, 'error', 6000);
+        }
+
+        // Reload page after short delay to refresh history table
+        setTimeout(() => window.location.reload(), 3000);
+    }
+
+    function populateList(listId, items, labelFn) {
+        const ul = document.getElementById(listId);
+        ul.innerHTML = '';
+        items.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = labelFn(item);
+            ul.appendChild(li);
+        });
+    }
+
+    // ── Message editor ────────────────────────────────────────────
+    const MAX_CHARS = {{ max_message_length }};
+
+    const DEFAULT_TEMPLATES = {
+        "1": {{ default_templates['1'] | tojson }},
+        "2": {{ default_templates['2'] | tojson }},
+        "3": {{ default_templates['3'] | tojson }},
+    };
+
+    const msgTextarea   = document.getElementById('msgTextarea');
+    const charCountEl   = document.getElementById('charCount');
+    const msgValidation = document.getElementById('msgValidation');
+    const previewBody   = document.getElementById('previewBody');
+
+    // Collapse / expand
+    document.getElementById('msgEditorToggle').addEventListener('click', () => {
+        const body    = document.getElementById('msgEditorBody');
+        const chevron = document.getElementById('msgEditorChevron');
+        const open    = body.classList.toggle('open');
+        chevron.classList.toggle('open', open);
+    });
+
+    // Placeholder insert buttons
+    document.querySelectorAll('.ph-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const ph    = btn.dataset.ph;
+            const start = msgTextarea.selectionStart;
+            const end   = msgTextarea.selectionEnd;
+            const val   = msgTextarea.value;
+            msgTextarea.value = val.slice(0, start) + ph + val.slice(end);
+            msgTextarea.selectionStart = msgTextarea.selectionEnd = start + ph.length;
+            msgTextarea.focus();
+            validateAndPreview();
+        });
+    });
+
+    // Per-mode storage — each mode keeps its own independent draft.
+    // Values are persisted in localStorage so edits survive page reloads.
+    const LS_KEY = m => `fnb_notif_template_${m}`;
+    const perModeTemplates = {
+        '1': localStorage.getItem(LS_KEY('1')) ?? DEFAULT_TEMPLATES['1'],
+        '2': localStorage.getItem(LS_KEY('2')) ?? DEFAULT_TEMPLATES['2'],
+        '3': localStorage.getItem(LS_KEY('3')) ?? DEFAULT_TEMPLATES['3'],
+    };
+
+    // Reset button — resets only the current mode back to its factory default
+    document.getElementById('resetMsgBtn').addEventListener('click', () => {
+        perModeTemplates[currentMode] = DEFAULT_TEMPLATES[currentMode] || '';
+        localStorage.removeItem(LS_KEY(currentMode));
+        msgTextarea.value = perModeTemplates[currentMode];
+        updateResetBtnState();
+        validateAndPreview();
+    });
+
+    function validateAndPreview() {
+        const text      = msgTextarea.value;
+        const trimmed   = text.trim();
+        const charCount = trimmed.length;
+
+        // Character counter
+        charCountEl.textContent = `${charCount} / ${MAX_CHARS}`;
+        charCountEl.className   = 'char-count' + (charCount > MAX_CHARS ? ' over' : charCount > MAX_CHARS * 0.9 ? ' warn' : '');
+
+        // Validation display
+        const errors   = [];
+        const warnings = [];
+        if (!trimmed) {
+            errors.push('Message cannot be empty.');
+        } else {
+            if (charCount > MAX_CHARS)    errors.push(`Too long — ${charCount - MAX_CHARS} chars over limit.`);
+            if (!trimmed.includes('{reference}')) errors.push('{reference} is required.');
+            if (!trimmed.includes('{amount}'))    warnings.push('{amount} is missing.');
+        }
+
+        msgValidation.innerHTML = [
+            ...errors.map(e   => `<span class="val-error">✕ ${e}</span>`),
+            ...warnings.map(w => `<span class="val-warning">⚠ ${w}</span>`),
+            ...(errors.length === 0 && trimmed ? ['<span class="val-ok">✓ Message looks good</span>'] : []),
+        ].join('');
+
+        // Textarea border colour
+        msgTextarea.classList.toggle('invalid', errors.length > 0);
+        msgTextarea.classList.toggle('valid',   errors.length === 0 && trimmed.length > 0);
+
+        // Live preview — substitute sample values
+        const sampleName   = 'John Smith';
+        const sampleAmount = '550';
+        const sampleRef    = 'CID700';
+        const preview = trimmed
+            .replace(/\{name\}/g, sampleName)
+            .replace(/\{amount\}/g, sampleAmount)
+            .replace(/\{reference\}/g, sampleRef);
+        previewBody.textContent = preview || '…';
+
+        return errors.length === 0 && trimmed.length > 0;
+    }
+
+    // Save to per-mode storage and localStorage on every keystroke
+    msgTextarea.addEventListener('input', () => {
+        perModeTemplates[currentMode] = msgTextarea.value;
+        if (msgTextarea.value.trim() && msgTextarea.value !== DEFAULT_TEMPLATES[currentMode]) {
+            localStorage.setItem(LS_KEY(currentMode), msgTextarea.value);
+        } else {
+            localStorage.removeItem(LS_KEY(currentMode));
+        }
+        updateResetBtnState();
+        validateAndPreview();
+    });
+
+    // Show/hide "custom" badge on the reset button depending on whether
+    // the current mode has a non-default template saved.
+    function updateResetBtnState() {
+        const isCustom = localStorage.getItem(LS_KEY(currentMode)) !== null;
+        const btn = document.getElementById('resetMsgBtn');
+        btn.textContent = isCustom ? '↺ Reset to default (custom saved)' : '↺ Reset to default';
+        btn.style.fontWeight = isCustom ? '700' : '';
+        btn.style.color = isCustom ? 'var(--color-warning)' : '';
+    }
+
+    // Track previous mode so we can save before switching away
+    let previousMode = '1';
+
+    // When a mode button is clicked: save the current draft, load the new mode's draft
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const enteringMode = btn.dataset.mode;
+            if (enteringMode === previousMode) return;
+            perModeTemplates[previousMode] = msgTextarea.value;  // save leaving mode
+            msgTextarea.value = perModeTemplates[enteringMode];   // load entering mode
+            previousMode = enteringMode;
+            updateResetBtnState();
+            validateAndPreview();
+        });
+    });
+
+    // Initialise with mode 1 (may be a persisted custom value)
+    msgTextarea.value = perModeTemplates['1'];
+    updateResetBtnState();
+    validateAndPreview();
+
+    // ── Sorting ────────────────────────────────────────────────────
+    let sortCol = 'outstanding';   // default sort column
+    let sortDir = 'desc';          // default direction
+
+    function sortTable(col, type) {
+        const tbody = document.getElementById('customerTableBody');
+        const rows  = Array.from(tbody.querySelectorAll('.customer-row'));
+
+        // Toggle direction if same column clicked again
+        if (sortCol === col) {
+            sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+            sortCol = col;
+            sortDir = col === 'name' ? 'asc' : 'desc'; // strings default asc, numbers default desc
+        }
+
+        const multiplier = sortDir === 'asc' ? 1 : -1;
+
+        rows.sort((a, b) => {
+            let aVal = a.dataset[col] ?? '';
+            let bVal = b.dataset[col] ?? '';
+
+            if (type === 'num') {
+                return (parseFloat(aVal) - parseFloat(bVal)) * multiplier;
+            } else if (type === 'bool') {
+                // true sorts before false when desc
+                const aB = aVal === 'true' ? 1 : 0;
+                const bB = bVal === 'true' ? 1 : 0;
+                return (aB - bB) * multiplier;
+            } else {
+                // string
+                return aVal.localeCompare(bVal) * multiplier;
+            }
+        });
+
+        // Re-append in sorted order (preserves hidden state)
+        rows.forEach(r => tbody.appendChild(r));
+
+        // Update header indicators
+        document.querySelectorAll('th.sortable').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+            if (th.dataset.sort === sortCol) {
+                th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+            }
+        });
+    }
+
+    document.querySelectorAll('th.sortable').forEach(th => {
+        th.addEventListener('click', () => sortTable(th.dataset.sort, th.dataset.type));
+    });
+
+    // Apply default sort indicator on load
+    document.querySelector('th[data-sort="outstanding"]').classList.add('sort-desc');
+
+    // ── Initial render ─────────────────────────────────────────────
+    applyFilters();
+})();
+</script>
+
+<script>
+// ── Notification History ───────────────────────────────────────────────────
+(function () {
+    const LOGS_URL  = '{{ url_for("notifications.notification_logs") }}';
+    const PER_PAGE  = 50;
+    const MODE_LABELS = { '1': 'New Invoice', '2': 'Overdue', '3': 'Suspended' };
+
+    let logMode    = 'all';
+    let logStatus  = 'all';
+    let logPage    = 1;
+    let searchTimer;
+
+    const tbody         = document.getElementById('logTableBody');
+    const metaEl        = document.getElementById('logResultMeta');
+    const pageInfoEl    = document.getElementById('logPageInfo');
+    const prevBtn       = document.getElementById('logPrevBtn');
+    const nextBtn       = document.getElementById('logNextBtn');
+    const searchInput   = document.getElementById('logSearch');
+    const dateFrom      = document.getElementById('logDateFrom');
+    const dateTo        = document.getElementById('logDateTo');
+    const inclTestCb    = document.getElementById('logIncludeTest');
+    const inclTestLabel = document.getElementById('logIncludeTestLabel');
+    const clearBtn      = document.getElementById('logClearBtn');
+    const csrfToken     = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    function fetchLogs() {
+        const params = new URLSearchParams({
+            q:            searchInput.value.trim(),
+            mode:         logMode,
+            status:       logStatus,
+            date_from:    dateFrom.value,
+            date_to:      dateTo.value,
+            include_test: inclTestCb.checked ? '1' : '0',
+            page:         logPage,
+            per_page:     PER_PAGE,
+        });
+
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--color-neutral);padding:28px;">Loading…</td></tr>';
+        metaEl.textContent = 'Loading…';
+
+        fetch(`${LOGS_URL}?${params}`, { headers: { 'X-CSRFToken': csrfToken } })
+            .then(r => r.json())
+            .then(renderLogs)
+            .catch(() => {
+                tbody.innerHTML = '<tr><td colspan="9" style="color:var(--color-danger);padding:16px;">Failed to load logs.</td></tr>';
+                metaEl.textContent = '';
+            });
+    }
+
+    function renderLogs(data) {
+        const plural = data.total !== 1 ? 's' : '';
+        metaEl.textContent = `${data.total} record${plural} found`;
+        pageInfoEl.textContent = `Page ${data.page} of ${data.pages}`;
+        prevBtn.disabled = data.page <= 1;
+        nextBtn.disabled = data.page >= data.pages;
+
+        if (!data.logs.length) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--color-neutral);padding:28px;">No records match your filters.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.logs.map(l => {
+            const statusBadge = {
+                sent:    '<span class="log-badge-sent">Sent</span>',
+                failed:  '<span class="log-badge-failed">Failed</span>',
+                skipped: '<span class="log-badge-skipped">Skipped</span>',
+            }[l.status] || esc(l.status);
+            const testBadge = l.test_mode ? '<span class="log-badge-test">TEST</span>' : '';
+            const amount    = l.amount != null ? `R ${parseFloat(l.amount).toFixed(2)}` : '—';
+            const note      = l.error_reason || l.whatsapp_message_id || '';
+            return `
+            <tr>
+                <td style="white-space:nowrap;">${esc(l.timestamp)}</td>
+                <td><code>CID${l.uisp_client_id}</code></td>
+                <td>${esc(l.customer_name)}</td>
+                <td>${esc(l.phone) || '—'}</td>
+                <td>${esc(MODE_LABELS[l.mode] || l.mode)}</td>
+                <td style="text-align:right;">${amount}</td>
+                <td>${statusBadge}${testBadge}</td>
+                <td>${esc(l.sent_by) || '—'}</td>
+                <td style="color:var(--color-neutral);font-size:12px;">${esc(note)}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    function esc(str) {
+        return (str || '').toString()
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function reset() {
+        logPage   = 1;
+        fetchLogs();
+    }
+
+    // ── Mode pills ──────────────────────────────────────────────────
+    document.querySelectorAll('[data-log-mode]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-log-mode]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            logMode = btn.dataset.logMode;
+            reset();
+        });
+    });
+
+    // ── Status pills ────────────────────────────────────────────────
+    document.querySelectorAll('[data-log-status]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-log-status]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            logStatus = btn.dataset.logStatus;
+            reset();
+        });
+    });
+
+    // ── Debounced search ────────────────────────────────────────────
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(reset, 320);
+    });
+
+    // ── Date range ──────────────────────────────────────────────────
+    dateFrom.addEventListener('change', reset);
+    dateTo.addEventListener('change', reset);
+
+    // ── Test sends toggle ───────────────────────────────────────────
+    inclTestCb.addEventListener('change', function () {
+        inclTestLabel.textContent = this.checked ? 'Show' : 'Hide';
+        reset();
+    });
+
+    // ── Clear all filters ───────────────────────────────────────────
+    clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        dateFrom.value    = '';
+        dateTo.value      = '';
+        inclTestCb.checked = true;
+        inclTestLabel.textContent = 'Show';
+        logMode   = 'all';
+        logStatus = 'all';
+        document.querySelectorAll('[data-log-mode]').forEach(b => b.classList.toggle('active', b.dataset.logMode === 'all'));
+        document.querySelectorAll('[data-log-status]').forEach(b => b.classList.toggle('active', b.dataset.logStatus === 'all'));
+        reset();
+    });
+
+    // ── Pagination ──────────────────────────────────────────────────
+    prevBtn.addEventListener('click', () => { logPage--; fetchLogs(); });
+    nextBtn.addEventListener('click', () => { logPage++; fetchLogs(); });
+
+    // ── Initial load ────────────────────────────────────────────────
+    fetchLogs();
+})();
+</script>
+
+{% endblock %}
